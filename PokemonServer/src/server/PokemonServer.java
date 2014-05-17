@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+/**/
+/**/
 package server;
 
 import javafx.application.Application;
@@ -14,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+/*working on server*/
 
 /**
  *

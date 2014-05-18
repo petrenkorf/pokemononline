@@ -13,10 +13,15 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Timer;
 
+
+
+
 //import java.util.TimerTask;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 //import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,6 +29,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 //import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 //import pokemon.map.Map;
@@ -134,15 +140,15 @@ public class Pokemon extends Application {
         map.loadMap();
         map.draw(screen.getPixelWriter());
         
-//        Rectangle2D monitor;
-//        
-//        ObservableList<Screen> screens = Screen.getScreens();
-//        
-//        for (int i=0; i < screens.size(); i++) {
-//            monitor = screens.get(i).getBounds();
-//            
-//            System.out.println("Resolution (" + monitor.getWidth() + ", " + monitor.getHeight() + ")");
-//        }
+        Rectangle2D monitor;
+        
+        ObservableList<Screen> screens = Screen.getScreens();
+        
+        for (int i=0; i < screens.size(); i++) {
+            monitor = screens.get(i).getBounds();
+            
+            System.out.println("Resolution (" + monitor.getWidth() + ", " + monitor.getHeight() + ")");
+        }
         
         screenView.setImage(screen);
         
@@ -151,9 +157,9 @@ public class Pokemon extends Application {
 
         
         pane.getChildren().add(screenView);
-        pane.getChildren().addAll(textArea, buttonSendMessage);
+        //pane.getChildren().addAll(textArea, buttonSendMessage);
 
-        pane.getChildren().add(screenView);
+      //  pane.getChildren().add(screenView);
 //        pane.getChildren().addAll(textArea, buttonSendMessage);
 
         

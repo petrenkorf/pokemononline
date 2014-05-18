@@ -1,4 +1,10 @@
-package client;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package pokemon;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -17,7 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 //import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import client.map.Map;
+//import pokemon.map.Map;
 
 /**
  *
@@ -27,7 +33,7 @@ public class Pokemon extends Application {
     TextArea textArea;
     
     ImageView screenView = new ImageView();
-    Map map = new Map();
+//    Map map = new Map();
     
     Timer timer = new Timer();
     
@@ -35,11 +41,10 @@ public class Pokemon extends Application {
     public void start(Stage primaryStage) {
         Button buttonSendMessage = new Button();
         buttonSendMessage.setText("Send Message");
-        
+//        
         textArea = new TextArea();
-        
+//        
         buttonSendMessage.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
             public void handle(ActionEvent event) {
                 Socket s = null;
                 
@@ -47,8 +52,7 @@ public class Pokemon extends Application {
                 
                 try {
 //                s = new Socket("127.0.0.1", 8686);
-                    s = new Socket("201.67.150.184", 8888);
-//                    s = new Socket("177.156.167.60", 8686);
+                    s = new Socket("177.97.167.22", 8686);
                     
                     stream = new PrintStream(s.getOutputStream());
                     
@@ -90,7 +94,8 @@ public class Pokemon extends Application {
         
         StackPane pane = new StackPane();
         
-//        pane.getChildren().add(screenView);
+        
+        pane.getChildren().add(screenView);
         pane.getChildren().addAll(textArea, buttonSendMessage);
         
         Scene scene = new Scene(pane, 800, 600);

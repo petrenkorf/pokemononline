@@ -7,18 +7,19 @@
 package client;
 
 import java.util.Calendar;
-import java.util.Timer;
 import java.util.TimerTask;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+// TODO: fazer
+
 /**
  *
  * @author bruno.weig
  */
-public class Game extends TimerTask{
+public class Game extends TimerTask {
     WritableImage screen = new WritableImage(800, 600);
     
     int tileWidth = 32;

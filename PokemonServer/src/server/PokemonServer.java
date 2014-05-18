@@ -4,16 +4,22 @@
  * and open the template in the editor.
  */
 
+/**/
+/**/
 package server;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+/*working on server*/
 
 /**
  *
@@ -30,6 +36,27 @@ public class PokemonServer extends Application {
         
         Object[] args = {messages};
         
+        Connection conn = null;
+        
+        try {
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pokemon", 
+                                                "postgres", "5624123");
+            
+            Statement stmt = conn.createStatement();
+            
+            ResultSet rs = stmt.executeQuery("select * from users");
+            
+            ResultSetMetaData rsmd = rs.getMetaData();
+            
+            rs.close();
+            
+            conn.close();
+            
+            System.out.println("Database connected: " + rs.getRow() + " results!");
+        } catch (Exception e) {
+            System.err.println("SQL Problem: " + e.getMessage());
+        }
+        
         StackPane root = new StackPane();
         root.getChildren().addAll(messagesHeader, messages);
         
@@ -39,8 +66,8 @@ public class PokemonServer extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         
-        server = new Thread(new PokemonSocket(args));
-        server.start();
+//        server = new Thread(new PokemonSocket(args));
+//        server.start();
     }
 
     /**
@@ -49,5 +76,4 @@ public class PokemonServer extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
 }

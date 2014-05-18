@@ -1,27 +1,35 @@
+package client;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 
-package pokemon;
+//package pokemon;
 
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.Socket;
 import java.util.Timer;
+
 //import java.util.TimerTask;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 //import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 //import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-<<<<<<< HEAD
+
 //import pokemon.map.Map;
-=======
+
 import client.map.Map;
 import javafx.scene.image.WritableImage;
->>>>>>> c1117ccbcd129cd66b823668b55e955c90d1c074
 
 /**
  *
@@ -39,8 +47,8 @@ public class Pokemon extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-<<<<<<< HEAD
-        Button buttonSendMessage = new Button();
+
+ /*       Button buttonSendMessage = new Button();
         buttonSendMessage.setText("Send Message");
 //        
         textArea = new TextArea();
@@ -76,50 +84,52 @@ public class Pokemon extends Application {
                     }
                 }
             }
+        });*/
+    	
+    	Map map = new Map();
+    	
+        Button buttonSendMessage = new Button();
+        buttonSendMessage.setText("Send Message");
+        
+        textArea = new TextArea();
+        
+        buttonSendMessage.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Socket s = null;
+                
+                PrintStream stream = null;
+                
+                try {
+                s = new Socket("127.0.0.1", 8686);
+                    s = new Socket("201.67.150.184", 8888);
+                    s = new Socket("177.156.167.60", 8686);
+                    
+                    stream = new PrintStream(s.getOutputStream());
+                    
+                    System.out.println(textArea.getText());
+                    
+                    stream.println(textArea.getText());
+                    
+                    textArea.clear();
+                } catch (IOException e) {
+                    System.out.println("Problem connecting server!");
+                } finally {
+                    try {
+                        if ( stream != null )
+                            stream.close();
+                        
+                        if ( s != null )
+                            s.close();
+                    } catch (IOException e) {
+                        System.err.println("Problem closing socket: " + e.getMessage());
+                    }
+                }
+            }
         });
-=======
-//        Button buttonSendMessage = new Button();
-//        buttonSendMessage.setText("Send Message");
-//        
-//        textArea = new TextArea();
-//        
-//        buttonSendMessage.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                Socket s = null;
-//                
-//                PrintStream stream = null;
-//                
-//                try {
-////                s = new Socket("127.0.0.1", 8686);
-//                    s = new Socket("201.67.150.184", 8888);
-////                    s = new Socket("177.156.167.60", 8686);
-//                    
-//                    stream = new PrintStream(s.getOutputStream());
-//                    
-//                    System.out.println(textArea.getText());
-//                    
-//                    stream.println(textArea.getText());
-//                    
-//                    textArea.clear();
-//                } catch (IOException e) {
-//                    System.out.println("Problem connecting server!");
-//                } finally {
-//                    try {
-//                        if ( stream != null )
-//                            stream.close();
-//                        
-//                        if ( s != null )
-//                            s.close();
-//                    } catch (IOException e) {
-//                        System.err.println("Problem closing socket: " + e.getMessage());
-//                    }
-//                }
-//            }
-//        });
         
         screen = new WritableImage(800, 600);
->>>>>>> c1117ccbcd129cd66b823668b55e955c90d1c074
+
         
         map.loadMap();
         map.draw(screen.getPixelWriter());
@@ -138,14 +148,14 @@ public class Pokemon extends Application {
         
         StackPane pane = new StackPane();
         
-<<<<<<< HEAD
+
         
         pane.getChildren().add(screenView);
         pane.getChildren().addAll(textArea, buttonSendMessage);
-=======
+
         pane.getChildren().add(screenView);
 //        pane.getChildren().addAll(textArea, buttonSendMessage);
->>>>>>> c1117ccbcd129cd66b823668b55e955c90d1c074
+
         
         Scene scene = new Scene(pane, 800, 600);
         

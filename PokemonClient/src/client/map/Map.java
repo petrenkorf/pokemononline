@@ -1,21 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package client.map;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -29,6 +18,7 @@ public class Map {
     Point2D[][] map = null;
     int tileWidth;
     int tileHeight;
+    int firstTileID;
     
     Image tileset;
     
@@ -54,6 +44,7 @@ public class Map {
             // Tileset
             tileWidth = tilesetElement.getAttribute("tilewidth").getIntValue();
             tileHeight = tilesetElement.getAttribute("tileheight").getIntValue();
+            firstTileID = tilesetElement.getAttribute("firstgid").getIntValue();
             
             System.out.println("Screen (" + mapWidth + ", " + mapHeight + ")" + 
                                 ", Tile(" + tileWidth + ", " + tileHeight + ")");
@@ -70,7 +61,6 @@ public class Map {
             tileset = new Image("/resource/image/tileset/tileset_day.png");
             
             int tilesetWidth = (int)tileset.getWidth() / tileWidth;
-            int tilesetHeight = (int)tileset.getHeight()/ tileHeight;
             
             String mapString = rootNode.getChild("layer").getChild("data").getText();
             
@@ -85,21 +75,16 @@ public class Map {
                 mapCol = mapRow[i+1].trim().split(",");
                 
                 for (int j=0; j < mapWidth; j++) {
-                    mapValue = Integer.parseInt(mapCol[j]);
+                    mapValue = Integer.parseInt(mapCol[j]) - firstTileID;
                     
-                    row = mapValue / mapWidth;
-                    col = mapValue - (row * mapWidth);
-                    
-                    System.out.print("(" + row + "," + col + ") ");
+                    row = mapValue / tilesetWidth;
+                    col = mapValue - (row * tilesetWidth);
                     
                     map[i][j] = new Point2D(col , row);
                 }
-                
-                System.out.println();
             }
             
             rootNode.getChildren("");
-            
         } catch (IOException e) {
             System.err.println("Problema na leitura do arquivo: " + e.getMessage());
         } catch (JDOMException e) {
@@ -108,10 +93,17 @@ public class Map {
     }
     
     public void draw(PixelWriter screen) {
-        for (int i=0; i < mapHeight; i++) {
-            for (int j=0; j < mapWidth; j++) {
+        int screenTileHorizontal = 20;
+        int screenTileVertical = 16;
+        
+        Point2D p;
+        
+        for (int i=0; i < screenTileVertical; i++) {
+            for (int j=0; j < screenTileHorizontal; j++) {
+                p = map[i][j];
+                
                 screen.setPixels(j*tileWidth, i * tileHeight, tileWidth, tileHeight, 
-                                 tileset.getPixelReader(), j*tileWidth, i * tileHeight);
+                                 tileset.getPixelReader(), (int)p.getX() *tileWidth, (int)p.getY() * tileHeight);
             }
         }
     }

@@ -92,7 +92,11 @@ public class Map {
         }
     }
     
+<<<<<<< HEAD
     /*public void draw(PixelWriter screen) {
+=======
+    public void draw(PixelWriter screen) {
+>>>>>>> c1117ccbcd129cd66b823668b55e955c90d1c074
         int screenTileHorizontal = 20;
         int screenTileVertical = 16;
         

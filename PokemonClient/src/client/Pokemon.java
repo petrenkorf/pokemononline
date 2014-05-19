@@ -39,7 +39,7 @@ import javafx.scene.image.WritableImage;
 
 /**
  *
- * @author bruno.weig
+ * @author bruno.weig, petrisrf
  */
 public class Pokemon extends Application {
     TextArea textArea;

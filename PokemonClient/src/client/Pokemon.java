@@ -2,10 +2,14 @@ package client;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+//import pokemon.map.Map;
+
 import client.map.Map;
 import client.util.Camera;
 import client.util.Display;
@@ -13,14 +17,13 @@ import java.awt.DisplayMode;
 import java.util.Vector;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Rectangle;
 
 /**
  *
- * @author bruno.weig
+ * @author bruno.weig, petrisrf
  */
 public class Pokemon extends Application {
     TextArea textArea;
@@ -41,10 +44,7 @@ public class Pokemon extends Application {
 //        Button buttonSendMessage = new Button();
 //        buttonSendMessage.setText("Send Message");
 //        
-//        textArea = new TextArea();
-//        
 //        buttonSendMessage.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
 //            public void handle(ActionEvent event) {
 //                Socket s = null;
 //                
@@ -52,8 +52,7 @@ public class Pokemon extends Application {
 //                
 //                try {
 ////                s = new Socket("127.0.0.1", 8686);
-//                    s = new Socket("201.67.150.184", 8888);
-////                    s = new Socket("177.156.167.60", 8686);
+//                    s = new Socket("177.97.167.22", 8686);
 //                    
 //                    stream = new PrintStream(s.getOutputStream());
 //                    
@@ -77,7 +76,7 @@ public class Pokemon extends Application {
 //                }
 //            }
 //        });
-        
+    	
         loop();
         
 //        screenView.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -129,8 +128,14 @@ public class Pokemon extends Application {
         
         StackPane pane = new StackPane();
         
+
+        
         pane.getChildren().add(screenView);
+        //pane.getChildren().addAll(textArea, buttonSendMessage);
+
+      //  pane.getChildren().add(screenView);
 //        pane.getChildren().addAll(textArea, buttonSendMessage);
+
         
         Scene scene = new Scene(pane, d.getWidth(), d.getHeight());
         
@@ -181,14 +186,14 @@ public class Pokemon extends Application {
         System.out.println("Map: " + map.getMapWidth() + "x" + map.getMapHeight());
         
         // Cria screen com folga para poder desenhar tiles a mais
-        screen = new WritableImage(c.getWidth() + 32, c.getHeight() + 32);
+        screen = new WritableImage(c.getWidth() + map.getTileWidth(), 
+                                   c.getHeight() + map.getTileHeight());
         
-        hero.setX(30 *  map.getTileWidth());
+        hero.setX(30 * map.getTileWidth());
         hero.setY(10 * map.getTileHeight());
-        hero.setWidth(32);
-        hero.setHeight(32);
+        hero.setWidth(map.getTileWidth());
+        hero.setHeight(map.getTileWidth());
         
-        c.update(hero);
         c.update(hero);
         
         map.draw(screen, screenView);

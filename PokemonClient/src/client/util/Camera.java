@@ -1,6 +1,5 @@
 package client.util;
 
-import java.awt.DisplayMode;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 
@@ -8,6 +7,7 @@ import javafx.scene.shape.Rectangle;
  *
  * @author bruno.weig
  */
+
 public class Camera {
     static Camera camera = null;
     
@@ -83,3 +83,4 @@ public class Camera {
         return display.getCurrentDisplayMode().getHeight();
     }
 }
+

@@ -7,12 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.shape.Rectangle;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -130,13 +128,17 @@ public class Map {
         PixelWriter pw = screen.getPixelWriter();
         DisplayMode mode = Display.getInstance().getCurrentDisplayMode();
 
-        Point2D cameraPos = camera.getLocation();
+//        Point2D cameraPos = camera.getLocation();
         
         int mapTileBeginX, mapTileBeginY;
         int mapTileEndX, mapTileEndY;
         
-        mapTileBeginX = (int)cameraPos.getX()/ tileWidth;
-        mapTileBeginY = (int)cameraPos.getY()/ tileHeight;
+        
+        mapTileBeginX = (int)camera.getX() / tileWidth;
+        mapTileBeginY = (int)camera.getY() / tileHeight;
+        
+        System.out.println("Zero1 ? = " + camera.getX() + ", " + tileWidth);
+        System.out.println("Zero2 ? = " + camera.getY() + ", " + tileHeight);
         
         // Limite superior esquerdo da tela
         if( mapTileBeginX < 0 ) {
@@ -147,8 +149,8 @@ public class Map {
             mapTileBeginY = 0;
         }
         
-        mapTileEndX = 1 + ((int)cameraPos.getX() + camera.getWidth()) / tileWidth;
-        mapTileEndY = 1 + ((int)cameraPos.getY() + camera.getHeight()) / tileHeight;
+        mapTileEndX = 1 + ((int)camera.getX() + camera.getWidth()) / tileWidth;
+        mapTileEndY = 1 + ((int)camera.getY() + camera.getHeight()) / tileHeight;
         
         // Limite inferior direto da tela
         if ( mapTileEndX >= mapWidthTiles ) {
@@ -159,8 +161,8 @@ public class Map {
             mapTileEndY = mapHeightTiles;
         }
         
-        int posGapX = (int)cameraPos.getX() % tileWidth;
-        int posGapY = (int)cameraPos.getY() % tileHeight;
+        int posGapX = (int)camera.getX() % tileWidth;
+        int posGapY = (int)camera.getY() % tileHeight;
         
         System.out.println("(Gap=" + posGapX + ", " + posGapY + ")");
         

@@ -6,13 +6,14 @@
 
 package client.ui;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -23,8 +24,6 @@ import javafx.stage.Stage;
 public class LoginUI extends AbstractUI {
     public LoginUI(Stage stage) {
         super(stage);
-        
-        System.out.println("Son");
         
         setStageTitle("Testando");
         
@@ -47,10 +46,16 @@ public class LoginUI extends AbstractUI {
         
         VBox pane = new VBox();
         
-        pane.setMaxWidth(300);
-        
         pane.getChildren().addAll(hboxLogin, hboxPassword, buttonLogin);
         
         setSceneContent(pane);
+        
+        // Eventos
+        buttonLogin.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                changeCurrentUI(new MainUI(stageRef));
+            }
+        });
     }
 }

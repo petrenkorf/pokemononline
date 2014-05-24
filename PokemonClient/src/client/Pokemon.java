@@ -2,45 +2,61 @@ package client;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-//import pokemon.map.Map;
-
-import client.map.Map;
-import client.util.Camera;
 import client.util.Display;
 import java.awt.DisplayMode;
-import java.util.Vector;
+import java.util.Timer;
 import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.shape.Rectangle;
+import javafx.stage.WindowEvent;
 
 /**
  *
  * @author bruno.weig, petrisrf
  */
 public class Pokemon extends Application {
-    TextArea textArea;
+    Game game = null;
+    
+    int fps = 50;
+    int miliPerFrame = 1000 / 40; 
     
     ImageView screenView = new ImageView();
-//    Canvas screenView = new Canvas(640 + 32, 480 + 32);
     
-    Map map = new Map();
-    
-    Rectangle hero = new Rectangle();
-    
-    WritableImage screen = null;
-    
-//    Timer timer = new Timer();
+    Timer timer = new Timer();
+    TextArea textArea;
     
     @Override
     public void start(Stage stage) {
+        communication();
+
+        // Objeto que controla o jogo
+        game = Game.getInstance();
+        game.init(screenView);
+
+        // Loop principal - executa o método run do objeto game a cada 1000/fps ms
+        timer.scheduleAtFixedRate(game, 0, miliPerFrame);   
+        
+        StackPane pane = new StackPane();
+        pane.getChildren().add(screenView);
+        
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                timer.cancel();
+            }
+        });
+        
+        DisplayMode d = Display.getInstance().getCurrentDisplayMode();
+        Scene scene = new Scene(pane, d.getWidth(), d.getHeight());
+        
+        stage.setTitle("Pokemon Remake");
+        stage.setScene(scene);
+        stage.show();
+    }
+    
+    public void communication() {
 //        Button buttonSendMessage = new Button();
 //        buttonSendMessage.setText("Send Message");
 //        
@@ -76,126 +92,9 @@ public class Pokemon extends Application {
 //                }
 //            }
 //        });
-    	
-        loop();
-        
-//        screenView.setOnKeyPressed(new EventHandler<KeyEvent>() {
-        screenView.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                int speed = 4;
-                
-                switch ( event.getCode() ) {
-                    case RIGHT:
-                        if ( hero.getX() + speed <= map.getMapWidth() )
-                            hero.setX(hero.getX() + speed);
-                        
-                        break;
-                    case LEFT:
-                        if ( hero.getX() >= speed )
-                            hero.setX(hero.getX() - speed);
-                        
-                        break;
-                    case UP:
-                        if ( hero.getY() >= speed )
-                            hero.setY(hero.getY() - speed);
-
-                        break;
-                    case DOWN:
-                        if ( hero.getY() + speed <= map.getMapHeight() )
-                            hero.setY(hero.getY() + speed);
-                        
-                        break;
-                    default:
-                        break;
-                }
-                
-                // Atualiza a câmera com a posição do personagem
-                Camera.getInstance().update(hero);
-                
-                map.draw(screen, screenView);
-            }
-        });
-        
-        DisplayMode d = Display.getInstance().getCurrentDisplayMode();
-        
-        // Se tirar o javafx não reconhece o evento de tecla pressionada
-        screenView.setFocusTraversable(true);
-        
-        screenView. setImage(screen);
-//        screenView.setClip(new Rectangle(0, 0, d.getWidth(), d.getHeight()));
-        screenView.setViewport(new Rectangle2D(0, 0, d.getWidth(), d.getHeight()));
-        
-        StackPane pane = new StackPane();
-        
-
-        
-        pane.getChildren().add(screenView);
-        //pane.getChildren().addAll(textArea, buttonSendMessage);
-
-      //  pane.getChildren().add(screenView);
-//        pane.getChildren().addAll(textArea, buttonSendMessage);
-
-        
-        Scene scene = new Scene(pane, d.getWidth(), d.getHeight());
-        
-        stage.setTitle("Pokemon!");
-        stage.setScene(scene);
-        stage.show();
-        
-//        timer.schedule(new Game(screenView), 500);        
-//        timer.scheduleAtFixedRate(new Game(screenView), 0, 500);        
     }
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private void loop() {
-        map.loadMap();
-        
-        Display d = Display.getInstance();
-        DisplayMode[] lol = d.getResolutions();
-        Vector<DisplayMode> displayVector = new Vector<DisplayMode>();
-        
-        // Deixa somente as resoluções divisíveis exatamente pela dimensão do tile
-        for (int i=0; i < lol.length; i++) {
-            if ( lol[i].getWidth() % map.getTileWidth() == 0 && 
-                 lol[i].getHeight() % map.getTileHeight() == 0 ) {
-                displayVector.add(lol[i]);
-            }
-        }
-        
-        DisplayMode mode = displayVector.firstElement();
-        
-//        screenView.setWidth(mode.getWidth());
-//        screenView.setHeight(mode.getHeight());
-        
-//        DisplayMode mode = d.getResolutions()[1];
-        d.setCurrentDisplay(mode);
-        
-        Camera c = Camera.getInstance();
-        
-        // Seta limites do ambiente
-        c.setEnvironmentBounds(map.getMapWidth(), map.getMapHeight());
-        
-        System.out.println("Resolution: " + c.getWidth() + "x" + c.getHeight());
-        System.out.println("Map: " + map.getMapWidth() + "x" + map.getMapHeight());
-        
-        // Cria screen com folga para poder desenhar tiles a mais
-        screen = new WritableImage(c.getWidth() + map.getTileWidth(), 
-                                   c.getHeight() + map.getTileHeight());
-        
-        hero.setX(30 * map.getTileWidth());
-        hero.setY(10 * map.getTileHeight());
-        hero.setWidth(map.getTileWidth());
-        hero.setHeight(map.getTileWidth());
-        
-        c.update(hero);
-        
-        map.draw(screen, screenView);
     }
 }

@@ -59,8 +59,8 @@ public class Camera {
             y = objectPosition.getY() - halfHeight;
         }
         
-        System.out.print("Position=" + objectPosition.getX() + ", " + objectPosition.getY() +
-                        " (Camera=" + x + ", " + y + ")");
+//        System.out.print("Position=" + objectPosition.getX() + ", " + objectPosition.getY() +
+//                        " (Camera=" + x + ", " + y + ")");
     }
     
     public Point2D getLocation() {

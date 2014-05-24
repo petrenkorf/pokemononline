@@ -39,7 +39,9 @@ public class Map {
     public void loadMap() {
         SAXBuilder builder = new SAXBuilder();
         
-        File mapFile = new File("src/resource/map/main.tmx");
+        String mapFilename = "src/resource/map/main.tmx";
+        
+        File mapFile = new File(mapFilename);
         
         try {
             Document doc = (Document)builder.build(mapFile);
@@ -71,6 +73,7 @@ public class Map {
             
 //            String[] filepathAux = filepath.split(filepath);
 
+            // TODO: Utilizar nome da imagem que está no arquivo
             tileset = new Image("/resource/image/tileset/tileset_day.png");
             
             int tilesetWidth = (int)tileset.getWidth() / tileWidth;
@@ -97,7 +100,7 @@ public class Map {
                 }
             }
             
-            rootNode.getChildren("");
+            System.out.println(mapFilename + " loaded successfully!");
         } catch (IOException e) {
             System.err.println("Problema na leitura do arquivo: " + e.getMessage());
         } catch (JDOMException e) {
@@ -106,10 +109,6 @@ public class Map {
     }
     
     public boolean collision(int x, int y) {
-//        if ( false ) {
-//            return false;
-//        }
-        
         return false;
     }
     
@@ -121,24 +120,27 @@ public class Map {
         return tileHeight;
     }
     
+    public int getMapWidth() {
+        return mapWidth;
+    }
+    
+    public int getMapHeight() {
+        return mapHeight;
+    }
+    
     public void draw(WritableImage screen, ImageView view) {
-//    public void draw(WritableImage screen, Canvas view) {
         Point2D currentTile;
-//        PixelWriter pw = view.getGraphicsContext2D().getPixelWriter();
         PixelWriter pw = screen.getPixelWriter();
         DisplayMode mode = Display.getInstance().getCurrentDisplayMode();
 
-//        Point2D cameraPos = camera.getLocation();
-        
         int mapTileBeginX, mapTileBeginY;
         int mapTileEndX, mapTileEndY;
-        
         
         mapTileBeginX = (int)camera.getX() / tileWidth;
         mapTileBeginY = (int)camera.getY() / tileHeight;
         
-        System.out.println("Zero1 ? = " + camera.getX() + ", " + tileWidth);
-        System.out.println("Zero2 ? = " + camera.getY() + ", " + tileHeight);
+//        System.out.println("Zero1 ? = " + camera.getX() + ", " + tileWidth);
+//        System.out.println("Zero2 ? = " + camera.getY() + ", " + tileHeight);
         
         // Limite superior esquerdo da tela
         if( mapTileBeginX < 0 ) {
@@ -164,30 +166,18 @@ public class Map {
         int posGapX = (int)camera.getX() % tileWidth;
         int posGapY = (int)camera.getY() % tileHeight;
         
-        System.out.println("(Gap=" + posGapX + ", " + posGapY + ")");
+//        System.out.println("(Gap=" + posGapX + ", " + posGapY + ")");
         
-        //
-//        Rectangle viewport = new Rectangle(posGapX, posGapY, mode.getWidth(), mode.getHeight());
         Rectangle2D viewport = new Rectangle2D(posGapX, posGapY, mode.getWidth(), mode.getHeight());
-//        view.setClip(viewport);
         view.setViewport(viewport);
         
         for (int i=mapTileBeginY, my = 0; i < mapTileEndY; i++, my++) {
             for (int j=mapTileBeginX, mx = 0; j < mapTileEndX; j++, mx++) {
                 currentTile = map[i][j];
                 
-//                pw.setPixels(mx * tileWidth, 0, tileWidth, tileHeight,
                 pw.setPixels(mx * tileWidth, my * tileHeight, tileWidth, tileHeight,
                             tileset.getPixelReader(), (int)currentTile.getX() * tileWidth, (int)currentTile.getY() * tileHeight);
             }
         }
-    }
-    
-    public int getMapWidth() {
-        return mapWidth;
-    }
-    
-    public int getMapHeight() {
-        return mapHeight;
     }
 }

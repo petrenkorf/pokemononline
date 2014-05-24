@@ -16,6 +16,15 @@ import java.awt.GraphicsEnvironment;
 public class Display {
     GraphicsEnvironment e = null;
     static Display instance = null;
+    boolean fullscreen = false;
+
+    public boolean isFullscreen() {
+        return fullscreen;
+    }
+
+    public void setFullscreen(boolean fullscreen) {
+        this.fullscreen = fullscreen;
+    }
     
     DisplayMode currentDisplayMode = null;
     

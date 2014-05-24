@@ -136,7 +136,7 @@ public class Game extends TimerTask {
     }
      
      private void draw() {
-         clearScreen();
+//        clearScreen();
          
         map.draw(screen, screenView);
      }

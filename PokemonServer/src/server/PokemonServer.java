@@ -24,8 +24,33 @@ public class PokemonServer extends Application {
     public void start(Stage primaryStage) {
         Label messagesHeader = new Label("Messages:");
         
+<<<<<<< HEAD
+        Object[] args = {messages};
+        
+        Connection conn = null;
+        
+        try {
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pokemon", 
+                                                "postgres", "petris8728272");
+            
+            Statement stmt = conn.createStatement();
+            
+            ResultSet rs = stmt.executeQuery("select * from users");
+            
+            ResultSetMetaData rsmd = rs.getMetaData();
+            
+            rs.close();
+            
+            conn.close();
+            
+            System.out.println("Database connected: " + rs.getRow() + " results!");
+        } catch (Exception e) {
+            System.err.println("SQL Problem: " + e.getMessage());
+        }
+=======
         initDB();
         test();
+>>>>>>> dea7a100b6c8f2afc8660f169bb6aaff8c238bc8
         
         StackPane root = new StackPane();
         root.getChildren().addAll(messagesHeader);

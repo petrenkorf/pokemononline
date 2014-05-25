@@ -10,9 +10,14 @@ import client.game.Game;
 import java.util.Timer;
 import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
+import org.controlsfx.dialog.Dialogs;
 
 /**
  *
@@ -43,11 +48,45 @@ public class GameUI extends AbstractUI {
         pane.getChildren().add(screenView);
         
         setSceneContent(pane);
+        
+        // Fechar o jogo
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if ( event.getCode() == KeyCode.ESCAPE ) {
+                    event.consume();
+                    
+                    Action response = Dialogs.create().
+                                title("Exit Game").
+                                masthead(null).
+                                message("Do you really want do close the game ?").
+                                showConfirm();
 
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                    System.out.println(response.toString());
+                       
+                    // Sair do jogo
+                    if ( response == Dialog.Actions.YES ) {
+                        timer.cancel();
+                        game.save();
+                        game.cancel();
+
+                        timer = null;
+                        game = null;
+
+                        previousUI();
+                    }
+                }
+            }
+        });
+        
+        // Caso tentar fechar a janela antes de sair do jogo
+        stageRef.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                timer.cancel();
+                if ( timer != null ) {
+                    timer.cancel();
+                    timer = null;
+                }
             }
         });
     }

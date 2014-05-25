@@ -22,7 +22,7 @@ public class SQLQueryFactory {
                 query = new SQLQueryPostgre();
                 break;
             default:
-                return null;
+                break;
         }
         
         return query;

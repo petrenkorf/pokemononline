@@ -23,7 +23,7 @@ public abstract class AbstractUI {
     static Stage stageRef = null;
     
     String stageTitle = new String();
-    Scene scene = null;
+    protected Scene scene = null;
 
     static boolean fullscreen = false;
 

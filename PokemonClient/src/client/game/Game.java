@@ -8,9 +8,7 @@ import java.util.Calendar;
 import java.util.TimerTask;
 import java.util.Vector;
 import javafx.application.Platform;
-import javafx.event.EventDispatchChain;
 import javafx.event.EventHandler;
-import javafx.event.EventTarget;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -18,15 +16,12 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.controlsfx.control.action.Action;
-import org.controlsfx.dialog.Dialog;
-import org.controlsfx.dialog.Dialogs;
 
 /**
  *
  * @author bruno.weig
  */
-public class Game extends TimerTask implements EventTarget {
+public class Game extends TimerTask {
     static Game game = null;
     
     WritableImage screen = null;
@@ -40,20 +35,16 @@ public class Game extends TimerTask implements EventTarget {
     Rectangle hero = new Rectangle();
 
     private Game() {
-        
     }
 
-    @Override
-    public EventDispatchChain buildEventDispatchChain(EventDispatchChain tail) {
-        return tail;
-    }
-    
     public void init(ImageView v) {
         screenView = v;
         
         screenView.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
+                event.consume();
+                
                 int speed = 8;
                 
                 switch ( event.getCode() ) {
@@ -77,20 +68,6 @@ public class Game extends TimerTask implements EventTarget {
                             hero.setY(hero.getY() + speed);
                         
                         break;
-                    case ESCAPE:
-                        Action response = Dialogs.create().
-                                 title("Exit Game").
-                                 masthead(null).
-                                 message("Do you really want do close the game ?").
-                                 showConfirm();
-                         
-                         // Sair do jogo
-                        if ( response == Dialog.Actions.YES ) {
-                            System.out.println("Close Window");
-//                            CloseGameEvent.fireEvent(game, event);
-                        }
-
-                        break;
                     default:
                         break;
                 }
@@ -105,6 +82,10 @@ public class Game extends TimerTask implements EventTarget {
         
         screenView. setImage(screen);
         screenView.setViewport(new Rectangle2D(0, 0, d.getWidth(), d.getHeight()));
+    }
+    
+    public void save() {
+        
     }
     
     static public Game getInstance() {

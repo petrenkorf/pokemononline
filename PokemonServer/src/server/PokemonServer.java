@@ -1,39 +1,30 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**/
-/**/
 package server;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+import db.SQLConnection;
+import db.SQLConnection.SGBD;
+import db.SQLQuery;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+import java.sql.SQLException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-/*working on server*/
-
 /**
  *
  * @author bruno.weig
  */
 public class PokemonServer extends Application {
+    SQLConnection db = null;
+    
     Thread server = null;
     
     @Override
     public void start(Stage primaryStage) {
         Label messagesHeader = new Label("Messages:");
-        Label messages = new Label();
-        messages.setPrefHeight(400);
         
+<<<<<<< HEAD
         Object[] args = {messages};
         
         Connection conn = null;
@@ -56,9 +47,13 @@ public class PokemonServer extends Application {
         } catch (Exception e) {
             System.err.println("SQL Problem: " + e.getMessage());
         }
+=======
+        initDB();
+        test();
+>>>>>>> dea7a100b6c8f2afc8660f169bb6aaff8c238bc8
         
         StackPane root = new StackPane();
-        root.getChildren().addAll(messagesHeader, messages);
+        root.getChildren().addAll(messagesHeader);
         
         Scene scene = new Scene(root, 400, 500);
         
@@ -70,9 +65,41 @@ public class PokemonServer extends Application {
 //        server.start();
     }
 
-    /**
-     * @param args the command line arguments
-     */
+    public void initDB() {
+        db = SQLConnection.getInstance();
+        
+        db.setServer("localhost");
+        db.setDbType(SGBD.Postgre);
+        db.setUsername("postgres");
+        db.setPassword("5624123");
+        db.setDatabase("pokemon");
+    }
+    
+    public void test() {
+        SQLQuery query;
+        
+        try {
+            db.connect();
+            
+            query = db.newQuery();
+            
+            query.select("*").from("users");
+            ResultSet rs = db.execute(query);
+            
+            while ( rs.next() ) {
+                System.out.println(rs.getInt("id") + ", " + rs.getString("username"));
+            }
+            
+            System.out.println("Database connected: " + rs.getRow() + 1 + " results!");
+            
+            rs.close();
+            
+            db.disconnect();
+        } catch (SQLException e) {
+            System.err.println("SQL Problem: " + e.getMessage());
+        }
+    }
+    
     public static void main(String[] args) {
         launch(args);
     }

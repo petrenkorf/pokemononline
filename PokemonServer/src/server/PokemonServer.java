@@ -40,7 +40,7 @@ public class PokemonServer extends Application {
         
         try {
             conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pokemon", 
-                                                "postgres", "5624123");
+                                                "postgres", "petris8728272");
             
             Statement stmt = conn.createStatement();
             

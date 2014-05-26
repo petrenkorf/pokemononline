@@ -3,6 +3,7 @@ package client.game;
 import client.map.Map;
 import client.util.Camera;
 import client.util.Display;
+import gameElement.Player;
 import java.awt.DisplayMode;
 import java.util.Calendar;
 import java.util.TimerTask;
@@ -32,7 +33,7 @@ public class Game extends TimerTask {
     
     Map map = new Map();
     
-    Rectangle hero = new Rectangle();
+    Player hero = new Player();//Rectangle();
 
     private Game() {
     }
@@ -132,6 +133,7 @@ public class Game extends TimerTask {
 //        clearScreen();
          
         map.draw(screen, screenView);
+        hero.draw(screen);
      }
      
      private void loadResource() {
@@ -166,8 +168,8 @@ public class Game extends TimerTask {
         screen = new WritableImage(c.getWidth() + map.getTileWidth(), 
                                    c.getHeight() + map.getTileHeight());
         
-        hero.setX(30 * map.getTileWidth());
-        hero.setY(10 * map.getTileHeight());
+        hero.setX(200);//30 * map.getTileWidth());
+        hero.setY(200); //* map.getTileHeight());
         hero.setWidth(map.getTileWidth());
         hero.setHeight(map.getTileWidth());
         

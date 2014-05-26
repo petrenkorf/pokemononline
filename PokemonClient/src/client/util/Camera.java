@@ -1,5 +1,6 @@
 package client.util;
 
+import gameElement.Player;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 
@@ -36,7 +37,7 @@ public class Camera {
         boundHeight = height;
     }
     
-    public void update(Rectangle objectPosition) {
+    public void update(Player objectPosition) {
         int width = display.getCurrentDisplayMode().getWidth();
         int height = display.getCurrentDisplayMode().getHeight();
         

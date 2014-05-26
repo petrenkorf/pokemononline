@@ -4,8 +4,11 @@
  * and open the template in the editor.
  */
 
-package client.util;
+package client.communication;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -15,22 +18,41 @@ import java.net.Socket;
  * @author bruno.weig
  */
 public class SocketClient {
-    static String SERVER_IP;
-    static int server_port = 8686;
+    static final int INPUT_LINE_SIZE = 10 * 1024;
     
-    public boolean sendMessage(String message) {
+    static String serverAddress;
+    static int serverPort = 8686;
+    byte[] response = new byte[INPUT_LINE_SIZE];
+    
+    public static void init() {
+        BufferedReader buf;
+        
+        try {
+            buf = new BufferedReader(new FileReader("ip.txt"));
+            
+            serverAddress = buf.readLine();
+            
+            buf.close();
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+    
+    public String sendMessage(String message) {
         Socket s = null;
         
         PrintStream stream = null;
                 
         try {
-            s = new Socket(SERVER_IP, server_port);
+            s = new Socket(serverAddress, serverPort);
 
             stream = new PrintStream(s.getOutputStream());
 
-            System.out.println(message);
-
             stream.println(message);
+            
+            s.getInputStream().read(response);
         } catch (IOException e) {
             System.out.println("Problem connecting server!");
         } finally {
@@ -45,6 +67,6 @@ public class SocketClient {
             }
         }
         
-        return true;   
+        return new String(response);
     }
 }

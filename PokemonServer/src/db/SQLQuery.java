@@ -25,8 +25,9 @@ public abstract class SQLQuery  {
     public abstract SQLQuery _or();
     public abstract SQLQuery _not();
     
-    public abstract SQLQuery equal();
-    public abstract SQLQuery like();
+    public abstract SQLQuery equal(String key, String value);
+    public abstract SQLQuery equal(String key, int value);
+    public abstract SQLQuery like(String key, String value);
     
     public String getQuery() {
         return query;

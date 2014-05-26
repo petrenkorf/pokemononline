@@ -58,32 +58,49 @@ public class SQLQueryPostgre extends SQLQuery {
 
     @Override
     public SQLQuery where() {
+        query += " WHERE";
+        
         return this;
     }
 
     @Override
     public SQLQuery _and() {
+        query += " and";
+        
         return this;
     }
 
     @Override
     public SQLQuery _or() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        query += " or";
+        return this;
     }
 
     @Override
     public SQLQuery _not() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        query += " not";
+        return this;
     }
 
     @Override
-    public SQLQuery equal() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public SQLQuery equal(String key, String value) {
+        query += " " + key + " = " + "'" + value + "'";
+        
+        return this;
     }
 
     @Override
-    public SQLQuery like() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public SQLQuery equal(String key, int value) {
+        query += " " + key + " = " + value;
+        
+        return this;
+    }
+
+    @Override
+    public SQLQuery like(String key, String value) {
+        query += " " + key + " like " + value;
+        
+        return this;
     }
     
 }

@@ -95,44 +95,6 @@ public class Game extends TimerTask {
         return game;
     }
     
-    public void communication() {
-//        Button buttonSendMessage = new Button();
-//        buttonSendMessage.setText("Send Message");
-//        
-//        buttonSendMessage.setOnAction(new EventHandler<ActionEvent>() {
-//            public void handle(ActionEvent event) {
-//                Socket s = null;
-//                
-//                PrintStream stream = null;
-//                
-//                try {
-////                s = new Socket("127.0.0.1", 8686);
-//                    s = new Socket("177.97.167.22", 8686);
-//                    
-//                    stream = new PrintStream(s.getOutputStream());
-//                    
-//                    System.out.println(textArea.getText());
-//                    
-//                    stream.println(textArea.getText());
-//                    
-//                    textArea.clear();
-//                } catch (IOException e) {
-//                    System.out.println("Problem connecting server!");
-//                } finally {
-//                    try {
-//                        if ( stream != null )
-//                            stream.close();
-//                        
-//                        if ( s != null )
-//                            s.close();
-//                    } catch (IOException e) {
-//                        System.err.println("Problem closing socket: " + e.getMessage());
-//                    }
-//                }
-//            }
-//        });
-    }
-    
     @Override
     public void run() {
         Platform.runLater(new Runnable() {

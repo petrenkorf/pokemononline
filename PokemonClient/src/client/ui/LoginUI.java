@@ -6,6 +6,9 @@
 
 package client.ui;
 
+import client.communication.ClientRequest;
+import client.communication.SocketClient;
+import client.game.Player;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -22,16 +25,21 @@ import javafx.stage.Stage;
  * @author bruno.weig
  */
 public class LoginUI extends AbstractUI {
+    SocketClient s = new SocketClient();
+    
+    TextField inputLogin = new TextField();
+    PasswordField inputPassword = new PasswordField();
+    
     public LoginUI(Stage stage) {
         super(stage);
         
         setStageTitle("Testando");
         
         Label labelLogin = new Label("Login:");
-        TextField inputLogin = new TextField();
+        inputLogin = new TextField();
         
         Label labelPassword = new Label("Password:");
-        PasswordField inputPassword = new PasswordField();
+        inputPassword = new PasswordField();
         
         HBox hboxLogin = new HBox(10);
         hboxLogin.getChildren().addAll(labelLogin, inputLogin);
@@ -54,7 +62,16 @@ public class LoginUI extends AbstractUI {
         buttonLogin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                changeCurrentUI(new MainUI(stageRef));
+                Player player = ClientRequest.getInstance().login(
+                    inputLogin.getText(), inputPassword.getText()
+                );
+                
+                if ( player != null ) {
+                    System.out.println("Logged");
+//                    changeCurrentUI(new MainUI(stageRef));
+                } else {
+                    System.out.println("Not Logged");
+                }
             }
         });
     }

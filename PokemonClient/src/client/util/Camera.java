@@ -17,6 +17,8 @@ public class Camera {
     int boundHeight;
     double x;
     double y;
+    int localX;
+    int localY;
     
     private Camera() {
     }
@@ -73,6 +75,16 @@ public class Camera {
     
     public double getY() {
         return y;
+    }
+    
+    public int getLocalX() {
+        return 0;
+    }
+    
+    public int getLocalY() {
+        return 0;
+        
+        
     }
     
     public int getWidth() {

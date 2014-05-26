@@ -3,6 +3,7 @@ package client;
 import client.ui.AbstractUI;
 import client.ui.LoginUI;
 import client.util.Display;
+import client.communication.SocketClient;
 import java.awt.DisplayMode;
 import javafx.application.Application;
 import javafx.scene.control.TextArea;
@@ -30,6 +31,9 @@ public class Pokemon extends Application {
                 displayVector.add(resolutions[i]);
             }
         }
+        
+        // Carrega o IP do servidor de um arquivo
+        SocketClient.init();
         
         // Define a resolução
         d.setCurrentDisplay(displayVector.firstElement());

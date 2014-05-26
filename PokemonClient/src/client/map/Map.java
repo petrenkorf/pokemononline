@@ -30,16 +30,18 @@ public class Map {
     
     Image tileset;
     
+    WritableImage mapScreen = null;
+    
     int mapWidthTiles;
     int mapHeightTiles;
     
     int mapWidth;
     int mapHeight;
     
-    public void loadMap() {
+    public void loadMap(String filename) {
         SAXBuilder builder = new SAXBuilder();
         
-        String mapFilename = "src/resource/map/main.tmx";
+        String mapFilename = "src/resource/map/" + filename;
         
         File mapFile = new File(mapFilename);
         
@@ -57,6 +59,9 @@ public class Map {
             tileWidth = tilesetElement.getAttribute("tilewidth").getIntValue();
             tileHeight = tilesetElement.getAttribute("tileheight").getIntValue();
             firstTileID = tilesetElement.getAttribute("firstgid").getIntValue();
+            
+            // Aloca buffer do mapa
+            mapScreen = new WritableImage(camera.getWidth() + tileWidth, camera.getHeight() + tileHeight);
             
             mapWidth = mapWidthTiles * tileWidth;
             mapHeight = mapHeightTiles * tileHeight;
@@ -128,10 +133,10 @@ public class Map {
         return mapHeight;
     }
     
-    public void draw(WritableImage screen, ImageView view) {
+    public void draw(WritableImage screen) {
         Point2D currentTile;
-        PixelWriter pw = screen.getPixelWriter();
-        DisplayMode mode = Display.getInstance().getCurrentDisplayMode();
+        
+        PixelWriter pw = mapScreen.getPixelWriter();
 
         int mapTileBeginX, mapTileBeginY;
         int mapTileEndX, mapTileEndY;
@@ -166,11 +171,6 @@ public class Map {
         int posGapX = (int)camera.getX() % tileWidth;
         int posGapY = (int)camera.getY() % tileHeight;
         
-//        System.out.println("(Gap=" + posGapX + ", " + posGapY + ")");
-        
-        Rectangle2D viewport = new Rectangle2D(posGapX, posGapY, mode.getWidth(), mode.getHeight());
-        view.setViewport(viewport);
-        
         for (int i=mapTileBeginY, my = 0; i < mapTileEndY; i++, my++) {
             for (int j=mapTileBeginX, mx = 0; j < mapTileEndX; j++, mx++) {
                 currentTile = map[i][j];
@@ -179,5 +179,8 @@ public class Map {
                             tileset.getPixelReader(), (int)currentTile.getX() * tileWidth, (int)currentTile.getY() * tileHeight);
             }
         }
+        
+        screen.getPixelWriter().setPixels(0, 0, camera.getWidth(), camera.getHeight(), 
+                mapScreen.getPixelReader(), posGapX, posGapY);
     }
 }

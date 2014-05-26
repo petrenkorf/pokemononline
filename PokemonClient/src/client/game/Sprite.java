@@ -1,4 +1,4 @@
-package gameElement;
+package client.game;
 
 import java.util.Calendar;
 import javafx.scene.image.WritableImage;

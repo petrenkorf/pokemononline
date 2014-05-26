@@ -1,8 +1,9 @@
 package client.util;
 
-import gameElement.Player;
+import client.game.Player;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
+import client.game.Character;
 
 /**
  *
@@ -45,47 +46,49 @@ public class Camera {
         this.c = c;
     }
     
-    public void update(Player objectPosition) {
-        int width = display.getCurrentDisplayMode().getWidth();
-        int height = display.getCurrentDisplayMode().getHeight();
-        
-        float halfWidth = width / 2;
-        float halfHeight = height / 2;
-        
-        // Extremidade esquerda do mapa
-        if ( objectPosition.getX() - halfWidth <= 0 ) {
-            x = 0;
-            scrollingX = false;
-            
-            localX = objectPosition.getX();
-        } else if ( objectPosition.getX() + halfWidth >= boundWidth ) {
-            scrollingX = true;
-            // Scrolling
-            localX = (halfWidth - (boundWidth - objectPosition.getX())) + halfWidth;
-            
-            x = boundWidth - (width < boundWidth ? width : boundWidth);
-        } else {
-            scrollingX = false;
-            // Parte inferior do mapa
-            localX = halfWidth;
-            x = objectPosition.getX() - halfWidth;
-        }
-        
-        // Início do mapa
-        if ( objectPosition.getY() - halfHeight <= 0 ) {
-            scrollingY = false;
-            y = 0;
-            localY = objectPosition.getY();
-        } else if ( objectPosition.getY() + halfHeight >= boundHeight ) {
-            scrollingY = true;
+    public void update() {
+        if ( c != null ) {
+            int width = display.getCurrentDisplayMode().getWidth();
+            int height = display.getCurrentDisplayMode().getHeight();
+
+            float halfWidth = width / 2;
+            float halfHeight = height / 2;
+
+            // Extremidade esquerda do mapa
+            if ( c.getX() - halfWidth <= 0 ) {
+                x = 0;
+                scrollingX = false;
+
+                localX = c.getX();
+            } else if ( c.getX() + halfWidth >= boundWidth ) {
+                scrollingX = true;
+                // Scrolling
+                localX = (halfWidth - (boundWidth - c.getX())) + halfWidth;
+
+                x = boundWidth - (width < boundWidth ? width : boundWidth);
+            } else {
+                scrollingX = false;
+                // Parte inferior do mapa
+                localX = halfWidth;
+                x = c.getX() - halfWidth;
+            }
+
             // Início do mapa
-            y = boundHeight - (height < boundHeight ? height : boundHeight);
-            localY = (halfHeight - (boundHeight - objectPosition.getY())) + halfHeight;
-        } else {
-            scrollingY = false;
-            // Fim do mapa
-            y = objectPosition.getY() - halfHeight;
-            localY = halfHeight;
+            if ( c.getY() - halfHeight <= 0 ) {
+                scrollingY = false;
+                y = 0;
+                localY = c.getY();
+            } else if ( c.getY() + halfHeight >= boundHeight ) {
+                scrollingY = true;
+                // Início do mapa
+                y = boundHeight - (height < boundHeight ? height : boundHeight);
+                localY = (halfHeight - (boundHeight - c.getY())) + halfHeight;
+            } else {
+                scrollingY = false;
+                // Fim do mapa
+                y = c.getY() - halfHeight;
+                localY = halfHeight;
+            }
         }
         
 //        System.out.print("Position=" + objectPosition.getX() + ", " + objectPosition.getY() +

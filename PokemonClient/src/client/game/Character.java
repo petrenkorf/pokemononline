@@ -1,4 +1,4 @@
-package gameElement;
+package client.game;
 
 import javafx.scene.image.WritableImage;
 
@@ -7,7 +7,7 @@ import com.sun.javafx.geom.Rectangle;
 public class Character extends Sprite {
     protected Rectangle rect;
 
-    public Character(){
+    public Character() {
 
     }
 

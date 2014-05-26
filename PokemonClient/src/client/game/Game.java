@@ -3,11 +3,8 @@ package client.game;
 import client.map.Map;
 import client.util.Camera;
 import client.util.Display;
-import gameElement.Player;
 import java.awt.DisplayMode;
-import java.util.Calendar;
 import java.util.TimerTask;
-import java.util.Vector;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -16,7 +13,6 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 /**
  *
@@ -29,11 +25,11 @@ public class Game extends TimerTask {
     ImageView screenView = null;
     
     long time;
-    Calendar currentCalendar;
+    long currentTime;
     
     Map map = new Map();
     
-    Player hero = new Player();//Rectangle();
+    Player hero = new Player();
 
     private Game() {
     }
@@ -81,7 +77,7 @@ public class Game extends TimerTask {
         
         screenView.setFocusTraversable(true);
         
-        screenView. setImage(screen);
+        screenView.setImage(screen);
         screenView.setViewport(new Rectangle2D(0, 0, d.getWidth(), d.getHeight()));
     }
     
@@ -107,15 +103,15 @@ public class Game extends TimerTask {
     }
     
     private void mainLoop() {
-//        currentCalendar = Calendar.getInstance();
+//        currentTime = Calendar.getInstance().getTimeInMillis();
         
         // Atualiza a câmera com a posição do personagem
-        Camera.getInstance().update(hero);
+        Camera.getInstance().update();
         
         // Desenha
         draw();
         
-//        time = Calendar.getInstance().getTimeInMillis() - currentCalendar.getTimeInMillis();
+//        time = Calendar.getInstance().getTimeInMillis() - currentTime;
 //        System.out.println("Time: " + time);
     }
     
@@ -130,33 +126,34 @@ public class Game extends TimerTask {
     }
      
      private void draw() {
-//        clearScreen();
-         
-        map.draw(screen, screenView);
+        map.draw(screen);
         hero.draw(screen);
      }
      
      private void loadResource() {
-        map.loadMap();
-        
-        Display d = Display.getInstance();
-        
-        DisplayMode[] lol = d.getResolutions();
-        Vector<DisplayMode> displayVector = new Vector<DisplayMode>();
-        
-        // Deixa somente as resoluções divisíveis exatamente pela dimensão do tile
-        for (int i=0; i < lol.length; i++) {
-            if ( lol[i].getWidth() % map.getTileWidth() == 0 && 
-                 lol[i].getHeight() % map.getTileHeight() == 0 ) {
-                displayVector.add(lol[i]);
-            }
-        }
-        
-        DisplayMode mode = displayVector.firstElement();
-        
-        d.setCurrentDisplay(mode);
+//        Display d = Display.getInstance();
+//        
+//        DisplayMode[] lol = d.getResolutions();
+//        Vector<DisplayMode> displayVector = new Vector<DisplayMode>();
+//        
+//        // Deixa somente as resoluções divisíveis exatamente pela dimensão do tile
+//        for (int i=0; i < lol.length; i++) {
+//            if ( lol[i].getWidth() % map.getTileWidth() == 0 && 
+//                 lol[i].getHeight() % map.getTileHeight() == 0 ) {
+//                displayVector.add(lol[i]);
+//            }
+//        }
+//        
+//        DisplayMode mode = displayVector.firstElement();
+//        
+//        d.setCurrentDisplay(mode);
         
         Camera c = Camera.getInstance();
+        
+        screen = new WritableImage(c.getWidth(), c.getHeight());
+        
+        // Carrega mapa
+        map.loadMap("main.tmx");
         
         // Seta limites do ambiente
         c.setEnvironmentBounds(map.getMapWidth(), map.getMapHeight());
@@ -165,16 +162,12 @@ public class Game extends TimerTask {
         System.out.println("Map: " + map.getMapWidth() + "x" + map.getMapHeight());
         
         // Cria screen com folga para poder desenhar tiles a mais
-        screen = new WritableImage(c.getWidth() + map.getTileWidth(), 
-                                   c.getHeight() + map.getTileHeight());
         
         hero.setX(200);//30 * map.getTileWidth());
         hero.setY(200); //* map.getTileHeight());
         hero.setWidth(map.getTileWidth());
         hero.setHeight(map.getTileWidth());
         
-        c.update(hero);
-        
-        map.draw(screen, screenView);
+        c.setFocus(hero);
     }
 }

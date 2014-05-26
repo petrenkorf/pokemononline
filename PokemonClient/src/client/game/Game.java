@@ -46,7 +46,7 @@ public class Game extends TimerTask {
             public void handle(KeyEvent event) {
                 event.consume();
                 
-                int speed = 8;
+                int speed = 4;
                 
                 switch ( event.getCode() ) {
                     case RIGHT:

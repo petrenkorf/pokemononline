@@ -5,47 +5,45 @@ import javafx.scene.image.WritableImage;
 import com.sun.javafx.geom.Rectangle;
 
 public class Character extends Sprite {
-	
-	protected Rectangle rect;
-	
-	public Character(){
-		
-	}
-	
-	@Override
-	public void draw(WritableImage _screen) {
-		// TODO Auto-generated method stub
-		//lol
-	}
+    protected Rectangle rect;
 
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
+    public Character(){
 
-	}
-	
-	public void setX(int _x){
-		this.rect.x = _x;
-	}
-	
-	public void setY(int _y){
-		this.rect.y = _y;
-	}
-	
-	public void setHeight(int _h){
-		this.rect.height = _h;
-	}
-	
-	public void setWidth(int _w){
-		this.rect.height = _w;
-	}
-	
-	public int getX(){
-		return this.rect.x;
-	}
-	
-	public int getY(){
-		return this.rect.y;
-	}
+    }
 
+    @Override
+    public void draw(WritableImage _screen) {
+            // TODO Auto-generated method stub
+            //lol
+    }
+
+    @Override
+    public void update() {
+            // TODO Auto-generated method stub
+
+    }
+
+    public void setX(int _x){
+            this.rect.x = _x;
+    }
+
+    public void setY(int _y){
+            this.rect.y = _y;
+    }
+
+    public void setHeight(int _h){
+            this.rect.height = _h;
+    }
+
+    public void setWidth(int _w){
+            this.rect.height = _w;
+    }
+
+    public int getX(){
+            return this.rect.x;
+    }
+
+    public int getY(){
+            return this.rect.y;
+    }
 }

@@ -1,5 +1,6 @@
 package gameElement;
 
+import client.util.Camera;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
@@ -19,10 +20,17 @@ public class Player extends Character {
 	
 	@Override
 	public void draw(WritableImage _screen){
-		 System.out.print("x=" + this.rect.x + ", y=" + this.rect.y + ", w= " + this.rect.width + ", h= " + this.rect.height);
-			
-		_screen.getPixelWriter().setPixels(this.rect.x, this.rect.y, this.rect.width, this.rect.height,
-                spritesheet.getPixelReader(), 0, 0);
+//            System.out.print("x=" + this.rect.x + ", y=" + this.rect.y + ", w= " + this.rect.width + ", h= " + this.rect.height);
+
+            Camera c = Camera.getInstance();
+            
+//            if ( c.isScrollingX() && c.isScrollingY() ) {
+//                _screen.getPixelWriter().setPixels(c.getWidth()/ 2, c.getHeight() / 2, 
+//                    rect.width, rect.height, spritesheet.getPixelReader(), 0, 0);
+//            } else {
+                _screen.getPixelWriter().setPixels((int)c.getLocalX(), (int)c.getLocalY(), 
+                        rect.width, rect.height, spritesheet.getPixelReader(), 0, 0);
+//            }
      }
 	
 	@Override
@@ -30,6 +38,4 @@ public class Player extends Character {
 		// TODO Auto-generated method stub
 
 	}
-	
-	
 }

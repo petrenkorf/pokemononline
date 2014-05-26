@@ -62,16 +62,16 @@ public class LoginUI extends AbstractUI {
         buttonLogin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Player player = ClientRequest.getInstance().login(
-                    inputLogin.getText(), inputPassword.getText()
-                );
+//                Player player = ClientRequest.getInstance().login(
+//                    inputLogin.getText(), inputPassword.getText()
+//                );
                 
-                if ( player != null ) {
+//                if ( player != null ) {
                     System.out.println("Logged");
-//                    changeCurrentUI(new MainUI(stageRef));
-                } else {
-                    System.out.println("Not Logged");
-                }
+                    changeCurrentUI(new MainUI(stageRef));
+//                } else {
+//                    System.out.println("Not Logged");
+//                }
             }
         });
     }

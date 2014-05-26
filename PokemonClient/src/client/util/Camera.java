@@ -16,10 +16,14 @@ public class Camera {
     
     int boundWidth;
     int boundHeight;
+    boolean scrollingX = false;
+    boolean scrollingY = false;
     double x;
     double y;
-    int localX;
-    int localY;
+    double localX;
+    double localY;
+    
+    Character c = null;
     
     private Camera() {
     }
@@ -37,6 +41,10 @@ public class Camera {
         boundHeight = height;
     }
     
+    public void setFocus(Character c) {
+        this.c = c;
+    }
+    
     public void update(Player objectPosition) {
         int width = display.getCurrentDisplayMode().getWidth();
         int height = display.getCurrentDisplayMode().getHeight();
@@ -47,23 +55,53 @@ public class Camera {
         // Extremidade esquerda do mapa
         if ( objectPosition.getX() - halfWidth <= 0 ) {
             x = 0;
+            scrollingX = false;
+            
+            localX = objectPosition.getX();
         } else if ( objectPosition.getX() + halfWidth >= boundWidth ) {
-            // Extremidade direita do mapa
+            scrollingX = true;
+            // Scrolling
+            localX = (halfWidth - (boundWidth - objectPosition.getX())) + halfWidth;
+            
             x = boundWidth - (width < boundWidth ? width : boundWidth);
         } else {
+            scrollingX = false;
+            // Parte inferior do mapa
+            localX = halfWidth;
             x = objectPosition.getX() - halfWidth;
         }
         
+        // Início do mapa
         if ( objectPosition.getY() - halfHeight <= 0 ) {
+            scrollingY = false;
             y = 0;
+            localY = objectPosition.getY();
         } else if ( objectPosition.getY() + halfHeight >= boundHeight ) {
+            scrollingY = true;
+            // Início do mapa
             y = boundHeight - (height < boundHeight ? height : boundHeight);
+            localY = (halfHeight - (boundHeight - objectPosition.getY())) + halfHeight;
         } else {
+            scrollingY = false;
+            // Fim do mapa
             y = objectPosition.getY() - halfHeight;
+            localY = halfHeight;
         }
         
 //        System.out.print("Position=" + objectPosition.getX() + ", " + objectPosition.getY() +
 //                        " (Camera=" + x + ", " + y + ")");
+    }
+    
+    public boolean isScrolling() {
+        return scrollingX || scrollingY;
+    }
+    
+    public boolean isScrollingX() {
+        return scrollingX;
+    }
+    
+    public boolean isScrollingY() {
+        return scrollingY;
     }
     
     public Point2D getLocation() {
@@ -78,14 +116,12 @@ public class Camera {
         return y;
     }
     
-    public int getLocalX() {
-        return 0;
+    public double getLocalX() {
+        return localX;
     }
     
-    public int getLocalY() {
-        return 0;
-        
-        
+    public double getLocalY() {
+        return localY;
     }
     
     public int getWidth() {

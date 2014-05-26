@@ -13,7 +13,7 @@ public class Character extends Sprite {
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
-
+		//lol
 	}
 
 	@Override

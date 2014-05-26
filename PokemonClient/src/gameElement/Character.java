@@ -1,5 +1,7 @@
 package gameElement;
 
+import javafx.scene.image.WritableImage;
+
 import com.sun.javafx.geom.Rectangle;
 
 public class Character extends Sprite {
@@ -11,7 +13,7 @@ public class Character extends Sprite {
 	}
 	
 	@Override
-	public void draw() {
+	public void draw(WritableImage _screen) {
 		// TODO Auto-generated method stub
 		//lol
 	}

@@ -3,6 +3,7 @@ package client.game;
 import client.map.Map;
 import client.util.Camera;
 import client.util.Display;
+import gameElement.Player;
 import java.awt.DisplayMode;
 import java.util.Calendar;
 import java.util.TimerTask;
@@ -32,7 +33,7 @@ public class Game extends TimerTask {
     
     Map map = new Map();
     
-    Rectangle hero = new Rectangle();
+    Player hero = new Player();//Rectangle();
 
     private Game() {
     }

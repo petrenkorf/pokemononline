@@ -28,9 +28,11 @@ public class SocketClient {
         BufferedReader buf;
         
         try {
-            buf = new BufferedReader(new FileReader("ip.txt"));
+            buf = new BufferedReader(new FileReader("src/ip.txt"));
             
             serverAddress = buf.readLine();
+            
+            System.out.println("Address: " + serverAddress);
             
             buf.close();
         } catch (FileNotFoundException e) {

@@ -16,16 +16,14 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import client.game.Player;
+import com.google.gson.Gson;
 import db.SQLQuery;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  *
@@ -44,8 +42,6 @@ public class PokemonRequisition implements Runnable {
     
     public PokemonRequisition(BlockingQueue<Socket> requisitions) {
         requisitioQueue = requisitions;
-        
-        System.out.println("PokemonRequisition");
     }
     
     public void stop() {
@@ -72,26 +68,25 @@ public class PokemonRequisition implements Runnable {
                     
                     String[] requestPart = message.split(":");
                     String[] parameters = null;
-
+                    
+                    System.out.println("Segments: " + requestPart.length);
+                    
+                    command = requestPart[2];
+                    
                     // Parâmetros
-                    if ( requestPart.length > 3 ) {
-                        parameters = requestPart[3].split(" ");
-                        command = requestPart[3];
-                    }
+                    parameters = requestPart[3].split(" ");
 
                     // Verifica qual o comando na requisição
-                    switch ( Request.valueOf(command) ) {
-                        case LOGIN:
-                            output = login(parameters[0], parameters[1]);
-                            break;
-                        case PRESS:
-                            output = press(parameters[0]);
-                            break;
-                        case QUIT:
-                            output = quit();
-                            break;
+                    if ( command.equals(Request.LOGIN.toString()) ) {
+                        output = login(parameters[0], parameters[1]);
+                    } else if ( command.equals(Request.PRESS.toString()) ) {
+                        output = press(parameters[0]);
+                    } else {
+                        output = quit();
                     }
-
+                    
+                    System.out.println("SIZE: " + output.getBytes().length);
+                    
                     outputStream = currentRequisition.getOutputStream();
                     outputStream.write(output.getBytes());
 
@@ -120,14 +115,18 @@ public class PokemonRequisition implements Runnable {
     public String login(String username, String password) {
         String message = "";
         
+        System.out.println("Login player");
+        
         try {
             connection.connect();
 
+            MessageDigest md = null;
+            
             SQLQuery query = connection.newQuery();
-
+            
             query.select("*").
                     from("users").
-                    where().equal("name", username)._and()
+                    where().equal("username", username)._and()
                            .equal("password", password);
             
             ResultSet rs = connection.execute(query);
@@ -136,39 +135,48 @@ public class PokemonRequisition implements Runnable {
             
             if ( rs.next() ) {
                 try {
-                    MessageDigest md = MessageDigest.getInstance("MD5");
-
+                    md = MessageDigest.getInstance("MD5");
+                    
                     // Utiliza nome e data corrente para gerar o hash md5 do validationCode
-                    String nameAndDate = rs.getString("name") + Calendar.getInstance().getTimeInMillis();
+                    String nameAndDate = rs.getString("username") + ":" + 
+                                         Calendar.getInstance().getTimeInMillis();
 
                     md.update(nameAndDate.getBytes());
                     String validationCode = new String(md.digest());
 
-                    player = new Player(rs.getInt("id"), validationCode);
+                    System.out.println("Creating Player...");
+                    
                     // TODO Recuperar todos os dados do usuário (pokemons)
+                    player = new Player(rs.getInt("id"), validationCode);
+                    
+                    System.out.println("Player created...");
                     
                     // Serializa player
-                    ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("player.ser"));
-                    out.writeObject(player);
-                    out.close();
+                    System.out.println("Player serializing...");
                     
-                    message = new String(Files.readAllBytes(Paths.get("player.ser")));
+                    Gson gson = new Gson();
+                    message = gson.toJson(player);
+                    
+                    System.out.println("Player serialized...");
+                    
+                    message = Base64.encodeBase64String(message.getBytes());
                     
                     System.out.println("PlayerString Size: " + message.length() + " bytes!");
+                    
+                    System.out.println("Message: " + message);
                 } catch (NoSuchAlgorithmException e) {
                     message = Reply.FAIL.toString();
                     System.err.println(this.getClass().getName() + ": " + e.getMessage());
-                } catch (IOException e) {
-                    message = Reply.FAIL.toString();
-                    System.err.println(this.getClass().getName() + ": " + e.getMessage());
                 }
+            } else {
+                System.out.println("ResultSet is empty!");
             }
             
             rs.close();
             
             connection.disconnect();
         } catch (SQLException e ) {
-            
+            message = Reply.FAIL.toString();
         }
         
         return message;

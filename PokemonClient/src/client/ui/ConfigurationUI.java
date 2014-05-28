@@ -29,9 +29,7 @@ import javafx.stage.Stage;
 public class ConfigurationUI extends AbstractUI {
     Display d = Display.getInstance();
     
-    public ConfigurationUI(Stage stage) {
-        super(stage);
-        
+    public ConfigurationUI() {
         VBox vboxRoot = new VBox();
         vboxRoot.setAlignment(Pos.CENTER);
         

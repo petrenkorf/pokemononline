@@ -1,12 +1,11 @@
 package client;
 
 import client.ui.AbstractUI;
-import client.ui.LoginUI;
 import client.util.Display;
 import client.communication.SocketClient;
+import client.ui.LoginUI;
 import java.awt.DisplayMode;
 import javafx.application.Application;
-import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import java.util.Vector;
 
@@ -15,8 +14,6 @@ import java.util.Vector;
  * @author bruno.weig, petrisrf
  */
 public class Pokemon extends Application {
-    TextArea textArea;
-    
     @Override
     public void start(Stage stage) {
         Display d = Display.getInstance();
@@ -38,8 +35,11 @@ public class Pokemon extends Application {
         // Define a resolução
         d.setCurrentDisplay(displayVector.firstElement());
         
+        // Inicializa o frame do swing
+        AbstractUI.init();
+        
         // Layout corrente
-        AbstractUI.changeCurrentUI(new LoginUI(stage));
+        AbstractUI.changeCurrentUI(new LoginUI());
     }
     
     public static void main(String[] args) {

@@ -13,7 +13,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javafx.scene.control.Label;
 
-
 /**
  *
  * @author bruno.weig

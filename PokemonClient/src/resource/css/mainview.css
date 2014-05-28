@@ -1,0 +1,21 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 28, 2014, 8:15:38 AM
+    Author     : bruno.weig
+*/
+Button {
+    width: 200px;
+    
+    -fx-pref-tile-width: 200px;
+    
+    -fx-background-color: #666;
+    -fx-text-fill: white;
+}
+
+Button:hover {
+    -fx-background-color: #999;
+}

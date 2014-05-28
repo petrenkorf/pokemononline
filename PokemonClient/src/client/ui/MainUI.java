@@ -6,50 +6,34 @@
 
 package client.ui;
 
+import client.view.MainView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 /**
  *
  * @author bruno.weig
  */
-public class MainUI extends AbstractUI {
-    public MainUI(Stage stage) {
-        super(stage);
+public class MainUI extends MainView {
+    public MainUI() {
+        setViewTitle("Main");
         
-        Label labelMainMenu = new Label("Main Menu");
-        labelMainMenu.setFont(new Font(20));
+        loadFXML();
         
-        Button buttonStartGame = new Button("Start Game");
-        Button buttonQuitGame = new Button("Logout");
-        Button buttonConfiguration = new Button("Configuration");
-        
-        VBox vboxRoot = new VBox();
-        vboxRoot.setAlignment(Pos.CENTER);
-        
-        vboxRoot.getChildren().addAll(labelMainMenu, buttonStartGame, buttonConfiguration, buttonQuitGame);
-        
-        setSceneContent(vboxRoot);
-        
-        /*
-            Eventos
-        */ 
+        registerEvents();
+    }
+    
+    public void registerEvents() {
         // Iniciar jogo
-        buttonStartGame.setOnAction(new EventHandler<ActionEvent>() {
+        btnStartGame.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                changeCurrentUI(new GameUI(stageRef));
+                changeCurrentUI(new GameUI());
             }
         });
         
         // Voltar para tela de login
-        buttonQuitGame.setOnAction(new EventHandler<ActionEvent>() {
+        btnQuit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 previousUI();
@@ -57,11 +41,10 @@ public class MainUI extends AbstractUI {
         });
         
         // Configuração
-        buttonConfiguration.setOnAction(new EventHandler<ActionEvent>() {
+        btnConfig.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Configuration");
-                changeCurrentUI(new ConfigurationUI(stageRef));
+                changeCurrentUI(new ConfigurationUI());
             }
         });
     }

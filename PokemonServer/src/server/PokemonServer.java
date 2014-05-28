@@ -6,7 +6,6 @@ import db.SQLQuery;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

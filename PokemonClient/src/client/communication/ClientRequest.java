@@ -7,9 +7,11 @@
 package client.communication;
 
 import client.game.Player;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import com.google.gson.Gson;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 
 /**
  *  Realiza o envio e tratamento das mensagens entre cliente/servidor
@@ -80,24 +82,36 @@ public class ClientRequest {
     public Player login(String username, String password) {
         socket = new SocketClient();
         
-        message = "0:0:" + Request.LOGIN + ":" + username + " " + password;
+        MessageDigest md = null;
+            
+        String passwordHash = "";
+
+        // Gera o hash md5 da senha digitada pelo usuário
+        try {
+            md = MessageDigest.getInstance("MD5");
+
+            md.update(password.getBytes());
+
+            passwordHash = Hex.encodeHexString(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println(this.getClass().getName() + ": " + e.getMessage());
+        }
         
-        System.out.println("Message: " + message);
+        message = "0:0:" + Request.LOGIN + ":" + username + " " + passwordHash;
         
-        reply = socket.sendMessage(username);
+        String q = socket.sendMessage(message).trim();
+        
+        System.out.println("Serialized Object Size: " + q.length());
+        System.out.println("Deserialize: " + q);
+        
+        reply = new String(Base64.decodeBase64(q));
         
         if ( reply.equals(Reply.FAIL.toString()) ) {
             return null;
         } else {
             // Deserializa objeto
-            try {
-                ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(reply.getBytes()));
-                player = (Player)input.readObject();
-            } catch (IOException e) {
-                System.err.println(this.getClass().getName() + ": " + e.getMessage());
-            } catch (ClassNotFoundException e) {
-                System.err.println(this.getClass().getName() + ": " + e.getMessage());
-            }
+            Gson gson = new Gson();
+            player = gson.fromJson(reply, Player.class);
         }
         
         return player;

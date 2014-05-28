@@ -5,20 +5,38 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
 import com.sun.javafx.geom.Rectangle;
+import java.io.Serializable;
 
-public class Player extends Character {
-    long id;
-    String verificationCode;
-    String name;
-    private Image spritesheet;
+public class Player extends Character implements Serializable {
+    private long id;
+    private String verificationCode;
+    private String name;
+    private String filepath = "/resource/image/sprite/ash.png";
+    private transient Image spritesheet;
+
+//    private WritableImage spritesheet;
 
     public Player(){
-            this.rect = new Rectangle();
-            this.spritesheet = new Image("/resource/image/sprite/ash.png");
-            this.rect.x = 20;
-            this.rect.y = 20;
-            this.rect.width = 20;
-            this.rect.height = 20;
+        rect = new Rectangle();
+        spritesheet = new Image(filepath);
+        
+        rect.x = 20;
+        rect.y = 20;
+        rect.width = 20;
+        rect.height = 20;
+    }
+    
+    public Player(long id, String verificationCode){
+        this.id = id;
+        this.verificationCode = verificationCode;
+        
+        spritesheet = new Image("/resource/image/sprite/ash.png", false);
+        
+        rect = new Rectangle();
+        rect.x = 20;
+        rect.y = 20;
+        rect.width = 20;
+        rect.height = 20;
     }
 
     @Override
@@ -27,13 +45,8 @@ public class Player extends Character {
 
         Camera c = Camera.getInstance();
 
-//            if ( c.isScrollingX() && c.isScrollingY() ) {
-//                _screen.getPixelWriter().setPixels(c.getWidth()/ 2, c.getHeight() / 2, 
-//                    rect.width, rect.height, spritesheet.getPixelReader(), 0, 0);
-//            } else {
-            _screen.getPixelWriter().setPixels((int)c.getLocalX(), (int)c.getLocalY(), 
-                    rect.width, rect.height, spritesheet.getPixelReader(), 0, 0);
-//            }
+        _screen.getPixelWriter().setPixels((int)c.getLocalX(), (int)c.getLocalY(), 
+                rect.width, rect.height, spritesheet.getPixelReader(), 0, 0);
  }
 
     @Override
@@ -44,16 +57,8 @@ public class Player extends Character {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public String getVerificationCode() {
         return verificationCode;
-    }
-
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
     }
 
     public String getName() {
@@ -63,5 +68,4 @@ public class Player extends Character {
     public void setName(String name) {
         this.name = name;
     }
-    
 }

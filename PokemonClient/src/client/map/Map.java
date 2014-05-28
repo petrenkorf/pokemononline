@@ -78,7 +78,7 @@ public class Map {
             
 //            String[] filepathAux = filepath.split(filepath);
 
-            // TODO: Utilizar nome da imagem que está no arquivo
+            // TODO = Utilizar nome da imagem que está no arquivo
             tileset = new Image("/resource/image/tileset/tileset_day.png");
             
             int tilesetWidth = (int)tileset.getWidth() / tileWidth;
@@ -92,6 +92,7 @@ public class Map {
             int mapValue;
             int row, col;
             
+            // Lê cada linha do mapa
             for (int i=0; i < mapHeightTiles; i++) {
                 mapCol = mapRow[i+1].trim().split(",");
                 
@@ -143,9 +144,6 @@ public class Map {
         
         mapTileBeginX = (int)camera.getX() / tileWidth;
         mapTileBeginY = (int)camera.getY() / tileHeight;
-        
-//        System.out.println("Zero1 ? = " + camera.getX() + ", " + tileWidth);
-//        System.out.println("Zero2 ? = " + camera.getY() + ", " + tileHeight);
         
         // Limite superior esquerdo da tela
         if( mapTileBeginX < 0 ) {

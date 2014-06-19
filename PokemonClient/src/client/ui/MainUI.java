@@ -44,7 +44,7 @@ public class MainUI extends MainView {
         btnConfig.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                changeCurrentUI(new ConfigurationUI());
+                changeCurrentUI(new ConfigUI());
             }
         });
     }

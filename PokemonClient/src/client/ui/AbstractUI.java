@@ -7,7 +7,6 @@
 package client.ui;
 
 import client.game.Game;
-import client.util.Camera;
 import client.util.Display;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
@@ -18,7 +17,6 @@ import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
@@ -34,7 +32,6 @@ import javax.swing.SwingUtilities;
  */
 public abstract class AbstractUI {
     static Stack<AbstractUI> stackUI = new Stack<AbstractUI>();
-    static Stage stageRef = null;
     
     String viewTitle = new String();
     protected Scene scene = null;
@@ -80,21 +77,15 @@ public abstract class AbstractUI {
     
     private static void initAndShowGUI() {
         // This method is invoked on Swing thread
-        frame = new JFrame("FX");
+        frame = new JFrame();
         
         fxPanel = new JFXPanel();
-
-        frame.setTitle("Testing");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(fxPanel);
         frame.setVisible(true);
         
-        Camera c = Camera.getInstance();
-        frame.setSize(new Dimension(c.getWidth(), c.getHeight()));
-    }
-    
-    static public void setStage(Stage stage) {
-        stageRef = stage;
+        DisplayMode d = Display.getInstance().getCurrentDisplayMode();
+        frame.setSize(new Dimension(d.getWidth(), d.getHeight()));
     }
     
     static public void changeCurrentUI(AbstractUI ui) {

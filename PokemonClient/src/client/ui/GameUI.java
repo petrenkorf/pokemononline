@@ -7,10 +7,11 @@
 package client.ui;
 
 import client.game.Game;
-import java.util.Timer;
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyEvent;
+import static client.ui.AbstractUI.frame;
+import java.awt.Dimension;
+import java.awt.Insets;
 import javafx.scene.layout.StackPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -18,25 +19,31 @@ import javafx.scene.layout.StackPane;
  */
 public class GameUI extends AbstractUI {
     Game game = null;
-    Timer timer = null;
-    
-    int fps = 40;
-    int miliPerFrame = 1000 / fps; 
     
     public GameUI() {
-        setViewTitle("Player");
+        setViewTitle("Game");
         
-        // Objeto que controla o jogo
-        timer = new Timer();
-        
-        game = Game.getInstance();
-        game.init(timer);
+        game = new Game();
         
         initGL(game);
-        
         setSceneContent(new StackPane());
         
-        // Loop principal - executa o método run do objeto game a cada 1000/fps ms
-        timer.scheduleAtFixedRate(game, 0, miliPerFrame);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                frame.setResizable(false);
+                
+                Insets insets = frame.getInsets();
+                
+                frame.getContentPane().setPreferredSize(new Dimension(800, 600));
+                
+                // Precisar somar o valor das bordas
+                
+                // TODO Automatizar o dimensionamento da página
+                frame.setSize(800 + insets.left - 2, 600 + insets.top - 2);
+                
+//                frame.setSize(800 + insets.left + insets.right, 600 + insets.top + insets.bottom);
+            }
+        });
     }
 }

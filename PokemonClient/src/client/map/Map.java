@@ -1,16 +1,20 @@
 package client.map;
 
+import client.game.ResourceManager;
 import client.util.Camera;
-import client.util.Display;
-import java.awt.DisplayMode;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureCoords;
+import com.jogamp.opengl.util.texture.TextureIO;
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+import static javax.media.opengl.GL2.*;
+import javax.media.opengl.GLAutoDrawable;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -26,11 +30,12 @@ public class Map {
     int tileHeight;
     int firstTileID;
     
+    // Id Textura
+    IntBuffer textureId = IntBuffer.allocate(1);
+    
     Camera camera = Camera.getInstance();
     
-    Image tileset;
-    
-    WritableImage mapScreen = null;
+    Texture tileset;
     
     int mapWidthTiles;
     int mapHeightTiles;
@@ -38,7 +43,7 @@ public class Map {
     int mapWidth;
     int mapHeight;
     
-    public void loadMap(String filename) {
+    public void loadMap(String filename, GLAutoDrawable canvas, boolean loadTileset) {
         SAXBuilder builder = new SAXBuilder();
         
         String mapFilename = "src/resource/map/" + filename;
@@ -60,9 +65,6 @@ public class Map {
             tileHeight = tilesetElement.getAttribute("tileheight").getIntValue();
             firstTileID = tilesetElement.getAttribute("firstgid").getIntValue();
             
-            // Aloca buffer do mapa
-            mapScreen = new WritableImage(camera.getWidth() + tileWidth, camera.getHeight() + tileHeight);
-            
             mapWidth = mapWidthTiles * tileWidth;
             mapHeight = mapHeightTiles * tileHeight;
             
@@ -74,15 +76,20 @@ public class Map {
             
             filepath = filepath.replace("../", "");
             
-            System.out.println(filepath);
+            String[] filepathAux = filepath.split("/");
             
-//            String[] filepathAux = filepath.split(filepath);
-
-            // TODO = Utilizar nome da imagem que está no arquivo
-            tileset = new Image("/resource/image/tileset/tileset_day.png");
+            int n = filepathAux.length;
+            
+            String path = filepathAux[n-2] + "/" + filepathAux[n-1];
+            
+            System.out.println("Filepath " + filepath + " => " + path);
+            
+            // Carrega o tileset
+            loadTileset(path, canvas);
             
             int tilesetWidth = (int)tileset.getWidth() / tileWidth;
             
+            // Tiles
             String mapString = rootNode.getChild("layer").getChild("data").getText();
             
             map = new Point2D[mapHeightTiles][mapWidthTiles];
@@ -92,17 +99,20 @@ public class Map {
             int mapValue;
             int row, col;
             
+            int lineTiles = tileset.getWidth() / tileWidth;
+            
             // Lê cada linha do mapa
             for (int i=0; i < mapHeightTiles; i++) {
+                // Pula primeira linha (sempre em branco)
                 mapCol = mapRow[i+1].trim().split(",");
                 
                 for (int j=0; j < mapWidthTiles; j++) {
                     mapValue = Integer.parseInt(mapCol[j]) - firstTileID;
                     
-                    row = mapValue / tilesetWidth;
-                    col = mapValue - (row * tilesetWidth);
+                    row = mapValue / lineTiles;
+                    col = mapValue - (row * lineTiles);
                     
-                    map[i][j] = new Point2D(col , row);
+                    map[i][j] = new Point2D(col, row);
                 }
             }
             
@@ -112,6 +122,60 @@ public class Map {
         } catch (JDOMException e) {
             System.err.println("Problema na manipulação do xml: " + e.getMessage());
         }
+    }
+    
+    public void loadTileset(String path, GLAutoDrawable canvas) throws IOException {
+        GL gl = canvas.getGL();
+        
+        System.out.println("> Values");
+        
+        for (int i=0; i <= 1024; i+= 16) {
+            System.out.println(" " + i + " = " + (i / 1024.0));
+        }
+        
+        tileset = ResourceManager.loadTexture(canvas, path, TextureIO.PNG, true);
+        
+        GL2 gl2 = gl.getGL2();
+        
+        Buffer buffer = ByteBuffer.allocate(tileset.getWidth() * tileset.getHeight() * 4);
+        
+        tileset.bind(gl);
+        gl2.glBindTexture(tileset.getTarget(), tileset.getTextureObject());
+        gl2.glGetTexImage(tileset.getTarget(), 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);
+        gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
+        
+        // Cria nova textura
+        gl.glGenTextures(1, textureId);
+        
+        System.out.println("Array Created: " + textureId.get(0));
+        
+        gl2.glBindTexture(GL_TEXTURE_2D_ARRAY, textureId.get(0));
+        System.out.println("Texture binded");
+        
+        // Reserva espaço para a textura
+        gl2.glTexStorage2D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, mapWidth, mapHeight);
+        System.out.println("TextureAtlas created!");
+        
+//        gl2.glTexSubImage2D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+        
+//        for (int i=0; i < mapHeightTiles; i++) {
+//            for (int j=0; j < mapWidthTiles; j++) {
+//                gl2.glGetTex
+//                
+//                gl2.glTexSubImage2D(GL_TEXTURE_2D, 0, j * tileWidth, i * tileWidth, 
+//                        tileWidth, tileHeight, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+////                gl2.glTexSubImage2D(GL_TEXTURE_2D_ARRAY, 0, j * tileWidth, i * tileWidth, 
+////                        tileWidth, tileHeight, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+//            }
+//        }
+        
+        System.out.println("Map Created!");
+        
+        //Always set reasonable texture parameters
+        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
     
     public boolean collision(int x, int y) {
@@ -134,11 +198,14 @@ public class Map {
         return mapHeight;
     }
     
-    public void draw(WritableImage screen) {
+    public void draw(GLAutoDrawable screen) {
         Point2D currentTile;
         
-        PixelWriter pw = mapScreen.getPixelWriter();
-
+        // Fatores que são multiplicados pela posição de cada tile 
+        // (OpenGL utiliado coordenadas de textura entre 0.0 e 1.0)
+        double factor_x = (double)tileWidth / (double)tileset.getWidth();
+        double factor_y = (double)tileHeight / (double)tileset.getHeight();
+        
         int mapTileBeginX, mapTileBeginY;
         int mapTileEndX, mapTileEndY;
         
@@ -169,16 +236,42 @@ public class Map {
         int posGapX = (int)camera.getX() % tileWidth;
         int posGapY = (int)camera.getY() % tileHeight;
         
-        for (int i=mapTileBeginY, my = 0; i < mapTileEndY; i++, my++) {
-            for (int j=mapTileBeginX, mx = 0; j < mapTileEndX; j++, mx++) {
-                currentTile = map[i][j];
-                
-                pw.setPixels(mx * tileWidth, my * tileHeight, tileWidth, tileHeight,
-                            tileset.getPixelReader(), (int)currentTile.getX() * tileWidth, (int)currentTile.getY() * tileHeight);
-            }
-        }
+        GL gl = screen.getGL();
+        GL2 gl2 = gl.getGL2();
+        int tileY;
+        int tileX;
         
-        screen.getPixelWriter().setPixels(0, 0, camera.getWidth(), camera.getHeight(), 
-                mapScreen.getPixelReader(), posGapX, posGapY);
+        TextureCoords coords;
+        
+        tileset.enable(gl);
+        tileset.bind(gl);
+            
+        gl2.glBegin(GL2.GL_QUADS);
+            for (int i=mapTileBeginY, my = 0; i < mapTileEndY; i++, my += tileHeight) {
+                for (int j=mapTileBeginX, mx = 0; j < mapTileEndX; j++, mx += tileWidth) {
+                    currentTile = map[i][j];
+                    
+                    tileX = (int)currentTile.getX() * tileWidth;
+                    tileY = (int)currentTile.getY() * tileHeight;
+                    
+                    coords = tileset.getSubImageTexCoords(
+                            tileX, tileY + tileHeight, tileX + tileWidth, tileY);
+                    
+                    gl2.glTexCoord2d(coords.left(), coords.top());
+                    gl2.glVertex2i(mx - posGapX, my - posGapY);
+                    
+                    gl2.glTexCoord2d(coords.right(), coords.top());
+                    gl2.glVertex2i(mx + tileWidth - posGapX, my - posGapY);
+                    
+                    gl2.glTexCoord2d(coords.right(), coords.bottom());
+                    gl2.glVertex2i(mx + tileWidth  - posGapX, my + tileHeight - posGapY);
+                    
+                    gl2.glTexCoord2d(coords.left(), coords.bottom());
+                    gl2.glVertex2i(mx - posGapX, my + tileHeight - posGapY);
+                }
+            }
+        gl2.glEnd();
+        
+        tileset.disable(gl);
     }
 }

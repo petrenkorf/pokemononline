@@ -3,12 +3,18 @@ package client.game;
 import client.map.Map;
 import client.ui.AbstractUI;
 import client.util.Camera;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import com.jogamp.opengl.util.texture.Texture;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.IOException;
+import java.util.Calendar;
 import javafx.application.Platform;
 import javax.media.opengl.GL;
+import static javax.media.opengl.GL2.*;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
@@ -20,109 +26,110 @@ import org.controlsfx.dialog.Dialogs;
  *
  * @author bruno.weig
  */
-public class Game extends TimerTask implements GLEventListener, KeyListener {
-    static Game game = null;
+public class Game implements GLEventListener, KeyListener {
+    FPSAnimator fps = null;
+    Texture image = null;
     
-    Timer timer = null;
-    long time;
-    long currentTime;
+    Map map = null;
+    Player hero = null;
+    TextRenderer textRenderer = null;
     
-    Map map = new Map();
+    Camera c = Camera.getInstance();
     
-    Player hero = new Player();
-
-    private Game() {
+    long lastTime;
+    long lastFrameTime = 0;
+    
+    int framesPerSecond = 40;
+    
+    public Game() {
     }
     
     @Override
     public void init(GLAutoDrawable drawable) {
+        System.out.println("Game Initiating...");
+        
+        GL gl = drawable.getGL();
+        
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1);
+        
+        try {
+            loadResource(drawable);
+            
+            System.out.println("Resource loaded!");
+            
+            fps = new FPSAnimator(drawable, framesPerSecond);
+            fps.start();
+        } catch (IOException e) {
+            System.err.println("Init: " + e.getMessage());
+        }
+        
+        System.out.println("Game Initiated");
     }
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
+        System.out.println("Game Dispose");
     }
 
+    /**
+     * Executado pelo FPSAnimator a cada 
+     * 
+     * @param drawable 
+     */
     @Override
     public void display(GLAutoDrawable drawable) {
-        GL gl = drawable.getGL();
-        GL2 gl2 = gl.getGL2();
+        lastTime = Calendar.getInstance().getTimeInMillis();
         
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        mainLoop(drawable);
         
-        gl2.glColor3f(1.0f, 1.0f, 1.0f);
-        
-        gl2.glBegin(gl.GL_LINES);
-            gl2.glVertex2i(50, 50);
-            gl2.glVertex2i(150, 50);
-            gl2.glVertex2i(150, 150);
-            gl2.glVertex2i(50, 150);
-        gl2.glEnd();
+        lastFrameTime = Calendar.getInstance().getTimeInMillis() - lastTime;
     }
 
+    /**
+     * Loop principal
+     * 
+     * @param drawable 
+     */
+    private void mainLoop(GLAutoDrawable drawable) {
+        // Atualiza a câmera com a posição do personagem
+        Camera.getInstance().update();
+        
+        // Desenha
+        draw(drawable);
+    }
+    
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+        System.out.println("Reshape: " + width + "x" + height);
+        
         GL gl = drawable.getGL();
         GL2 gl2 = gl.getGL2();
         
+        // TODO Alterar resoluções
         gl.glViewport(0, 0, width, height); 
         gl2.glMatrixMode(GL2.GL_PROJECTION);  
         gl2.glLoadIdentity(); 
-        gl2.glOrtho(0, width, height, 0, -1.0, 1.0); 
+        gl2.glOrtho(0, c. getWidth(), c.getHeight(), 0, -1.0, 1.0); 
         gl2.glMatrixMode(GL2.GL_MODELVIEW);
         
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     }
 
-    public void init(Timer timer) {
-        loadResource();
-        
-        this.timer = timer;
-    }
-    
-    public void save() {
-        
-    }
-    
-    static public Game getInstance() {
-        if ( game == null ) 
-            game = new Game();
-        
-        return game;
-    }
-    
-    @Override
-    public void run() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                getInstance().mainLoop();
-            }
-        });
-    }
-    
-    private void mainLoop() {
-//        currentTime = Calendar.getInstance().getTimeInMillis();
-        
-        // Atualiza a câmera com a posição do personagem
-        Camera.getInstance().update();
-        
-        // Desenha
-//        draw();
-        
-//        time = Calendar.getInstance().getTimeInMillis() - currentTime;
-//        System.out.println("Time: " + time);
-    }
-    
-     private void draw() {
-//        map.draw(screen);
-//        hero.draw(screen);
-     }
-     
-     private void loadResource() {
+    /**
+     * Carrega os recursos utilizados no jogo (imagem, audio, mapa)
+     * 
+     * @throws IOException 
+     */
+    private void loadResource(GLAutoDrawable canvas) throws IOException {
         Camera c = Camera.getInstance();
         
         // Carrega mapa
-        map.loadMap("main.tmx");
+        map = new Map();
+        map.loadMap("main_2.tmx", canvas, true);
+        
+        // Text
+        textRenderer = new TextRenderer(new Font("Monospaced", Font.PLAIN, 16));
         
         // Seta limites do ambiente
         c.setEnvironmentBounds(map.getMapWidth(), map.getMapHeight());
@@ -130,14 +137,20 @@ public class Game extends TimerTask implements GLEventListener, KeyListener {
         System.out.println("Resolution: " + c.getWidth() + "x" + c.getHeight());
         System.out.println("Map: " + map.getMapWidth() + "x" + map.getMapHeight());
         
-        // Cria screen com folga para poder desenhar tiles a mais
+        hero = new Player();
         
-        hero.setX(200);//30 * map.getTileWidth());
-        hero.setY(200); //* map.getTileHeight());
-        hero.setWidth(map.getTileWidth());
-        hero.setHeight(map.getTileWidth());
+        hero.setX(32);
+        hero.setY(40);
+        hero.setWidth(16);
+        hero.setHeight(24);
+        hero.loadSpritesheet(canvas);
         
+        // Define o foco da câmera
         c.setFocus(hero);
+        
+        c.update();
+        
+        System.out.println("Camera: " + c.getX() + "x" + c.getY());
     }
 
     @Override
@@ -146,12 +159,8 @@ public class Game extends TimerTask implements GLEventListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println("Key Pressed");
-        
-        System.out.println("Key Pressed!");
-                
         int speed = 4;
-
+        
         switch ( e.getKeyCode() ) {
             case KeyEvent.VK_RIGHT:
                 if ( hero.getX() + speed <= map.getMapWidth() )
@@ -177,8 +186,7 @@ public class Game extends TimerTask implements GLEventListener, KeyListener {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        
-                    Action response = Dialogs.create().
+                        Action response = Dialogs.create().
                                     title("Exit Game").
                                     masthead(null).
                                     message("Do you really want do close the game ?").
@@ -188,7 +196,7 @@ public class Game extends TimerTask implements GLEventListener, KeyListener {
 
                         // Sair do jogo
                         if ( response == Dialog.Actions.YES ) {
-                            timer.cancel();
+                            fps.stop();
                             AbstractUI.destroyGL();
                             AbstractUI.previousUI();
                         }
@@ -203,4 +211,30 @@ public class Game extends TimerTask implements GLEventListener, KeyListener {
     @Override
     public void keyReleased(java.awt.event.KeyEvent e) {
     }
+    
+    private void draw(GLAutoDrawable canvas) {
+        GL gl = canvas.getGL();
+        GL2 gl2 = gl.getGL2();
+        
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        
+        gl.glEnable(GL_BLEND);
+        
+        map.draw(canvas);
+        hero.draw(canvas);
+        
+        gl.glDisable(GL_BLEND);
+        
+        String pos = "> Position: " + hero.getX() + "x" + hero.getY();
+//        String pos = "FrameTime: " + lastFrameTime + " | Position: " + hero.getX() + "x" + hero.getY();
+        
+        textRenderer.beginRendering(canvas.getWidth(), canvas.getHeight());
+        textRenderer.setColor(Color.cyan);
+        
+        textRenderer.draw(pos, 20, canvas.getHeight() - 20);
+        
+        textRenderer.endRendering();
+        
+        gl2.glColor3f(1.0f, 1.0f, 1.0f);
+     }
 }

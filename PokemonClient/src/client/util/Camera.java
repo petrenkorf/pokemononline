@@ -1,28 +1,33 @@
 package client.util;
 
-import client.game.Player;
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Rectangle;
 import client.game.Character;
 
 /**
  *
  * @author bruno.weig
  */
-
 public class Camera {
     static Camera camera = null;
     
-    Display display = Display.getInstance();
-    
+    // Limites da tela
     int boundWidth;
     int boundHeight;
+    
+    // Se está havendo scrolling
     boolean scrollingX = false;
     boolean scrollingY = false;
+    
     double x;
     double y;
+    
+    // Controla
     double localX;
     double localY;
+    
+    // Dimensão da tela
+    int width = 320;
+    int height = 240;
     
     Character c = null;
     
@@ -42,15 +47,17 @@ public class Camera {
         boundHeight = height;
     }
     
+    /**
+     * Define um personagem como foco da câmera onde seu posicionamento
+     * é utilizado no update
+     * @param c 
+     */
     public void setFocus(Character c) {
         this.c = c;
     }
     
     public void update() {
         if ( c != null ) {
-            int width = display.getCurrentDisplayMode().getWidth();
-            int height = display.getCurrentDisplayMode().getHeight();
-
             float halfWidth = width / 2;
             float halfHeight = height / 2;
 
@@ -128,11 +135,11 @@ public class Camera {
     }
     
     public int getWidth() {
-        return display.getCurrentDisplayMode().getWidth();
+        return width;
     }
     
     public int getHeight() {
-        return display.getCurrentDisplayMode().getHeight();
+        return height;
     }
 }
 

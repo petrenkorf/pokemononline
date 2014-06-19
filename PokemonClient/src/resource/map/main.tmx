@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="30" height="30" tilewidth="32" tileheight="32" backgroundcolor="#d8f8d8">
- <tileset firstgid="1" name="tileset_day" tilewidth="32" tileheight="32">
-  <image source="../image/tileset/tileset_day.png" width="1952" height="2720"/>
+<map version="1.0" orientation="orthogonal" width="30" height="30" tilewidth="16" tileheight="16" backgroundcolor="#d8f8d8">
+ <tileset firstgid="1" name="tileset_day_original" tilewidth="16" tileheight="16">
+  <image source="../image/tileset/tileset_day_original.png" width="976" height="1360"/>
  </tileset>
  <layer name="Main" width="30" height="30">
   <data encoding="csv">

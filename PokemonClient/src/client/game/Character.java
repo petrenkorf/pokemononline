@@ -1,8 +1,7 @@
 package client.game;
 
-import javafx.scene.image.WritableImage;
-
 import com.sun.javafx.geom.Rectangle;
+import javax.media.opengl.GLAutoDrawable;
 
 public class Character extends Sprite {
     protected Rectangle rect;
@@ -12,38 +11,38 @@ public class Character extends Sprite {
     }
 
     @Override
-    public void draw(WritableImage _screen) {
-            // TODO Auto-generated method stub
-            //lol
+    public void draw(GLAutoDrawable drawable) {
+        // TODO Auto-generated method stub
+        //lol
     }
 
     @Override
     public void update() {
-            // TODO Auto-generated method stub
+        // TODO Auto-generated method stub
 
     }
 
     public void setX(int _x){
-            this.rect.x = _x;
+        this.rect.x = _x;
     }
 
     public void setY(int _y){
-            this.rect.y = _y;
+        this.rect.y = _y;
     }
 
     public void setHeight(int _h){
-            this.rect.height = _h;
+        this.rect.height = _h;
     }
 
     public void setWidth(int _w){
-            this.rect.height = _w;
+        this.rect.height = _w;
     }
 
     public int getX(){
-            return this.rect.x;
+        return this.rect.x;
     }
 
     public int getY(){
-            return this.rect.y;
+        return this.rect.y;
     }
 }

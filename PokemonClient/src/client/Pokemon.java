@@ -3,7 +3,7 @@ package client;
 import client.ui.AbstractUI;
 import client.util.Display;
 import client.communication.SocketClient;
-import client.ui.LoginUI;
+import client.ui.GameUI;
 import java.awt.DisplayMode;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -39,7 +39,8 @@ public class Pokemon extends Application {
         AbstractUI.init();
         
         // Layout corrente
-        AbstractUI.changeCurrentUI(new LoginUI());
+        AbstractUI.changeCurrentUI(new GameUI());
+//        AbstractUI.changeCurrentUI(new LoginUI());
     }
     
     public static void main(String[] args) {

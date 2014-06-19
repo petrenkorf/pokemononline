@@ -11,7 +11,6 @@ import static client.ui.AbstractUI.changeCurrentUI;
 import client.view.LoginView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.input.KeyEvent;
 
 /**
  *

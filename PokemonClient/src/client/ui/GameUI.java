@@ -31,15 +31,13 @@ public class GameUI extends AbstractUI {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                
                 frame.setResizable(false);
                 
                 Insets insets = frame.getInsets();
                 
-                frame.getContentPane().setPreferredSize(new Dimension(800, 600));
-                
+                // TODO Automatizar o dimensionamento não da janela mas de seu CONTEÚDO
                 // Precisar somar o valor das bordas
-                
-                // TODO Automatizar o dimensionamento da página
                 frame.setSize(800 + insets.left - 2, 600 + insets.top - 2);
                 
 //                frame.setSize(800 + insets.left + insets.right, 600 + insets.top + insets.bottom);

@@ -75,13 +75,11 @@ public class Map {
             String filepath = tilesetElement.getChild("image").getAttributeValue("source");
             
             filepath = filepath.replace("../", "");
-            
             String[] filepathAux = filepath.split("/");
             
+            // Filtra o nome do tileset
             int n = filepathAux.length;
-            
             String path = filepathAux[n-2] + "/" + filepathAux[n-1];
-            
             System.out.println("Filepath " + filepath + " => " + path);
             
             // Carrega o tileset
@@ -127,11 +125,11 @@ public class Map {
     public void loadTileset(String path, GLAutoDrawable canvas) throws IOException {
         GL gl = canvas.getGL();
         
-        System.out.println("> Values");
-        
-        for (int i=0; i <= 1024; i+= 16) {
-            System.out.println(" " + i + " = " + (i / 1024.0));
-        }
+//        System.out.println("> Values");
+//        
+//        for (int i=0; i <= 1024; i+= 16) {
+//            System.out.println(" " + i + " = " + (i / 1024.0));
+//        }
         
         tileset = ResourceManager.loadTexture(canvas, path, TextureIO.PNG, true);
         
@@ -145,16 +143,16 @@ public class Map {
         gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
         
         // Cria nova textura
-        gl.glGenTextures(1, textureId);
-        
-        System.out.println("Array Created: " + textureId.get(0));
-        
-        gl2.glBindTexture(GL_TEXTURE_2D_ARRAY, textureId.get(0));
-        System.out.println("Texture binded");
-        
-        // Reserva espaço para a textura
-        gl2.glTexStorage2D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, mapWidth, mapHeight);
-        System.out.println("TextureAtlas created!");
+//        gl.glGenTextures(1, textureId);
+//        
+//        System.out.println("Array Created: " + textureId.get(0));
+//        
+//        gl2.glBindTexture(GL_TEXTURE_2D_ARRAY, textureId.get(0));
+//        System.out.println("Texture binded");
+//        
+//        // Reserva espaço para a textura
+//        gl2.glTexStorage2D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, mapWidth, mapHeight);
+//        System.out.println("TextureAtlas created!");
         
 //        gl2.glTexSubImage2D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
         
@@ -169,13 +167,13 @@ public class Map {
 //            }
 //        }
         
-        System.out.println("Map Created!");
-        
-        //Always set reasonable texture parameters
-        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//        System.out.println("Map Created!");
+//        
+//        //Always set reasonable texture parameters
+//        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//        gl.glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
     
     public boolean collision(int x, int y) {
@@ -203,8 +201,8 @@ public class Map {
         
         // Fatores que são multiplicados pela posição de cada tile 
         // (OpenGL utiliado coordenadas de textura entre 0.0 e 1.0)
-        double factor_x = (double)tileWidth / (double)tileset.getWidth();
-        double factor_y = (double)tileHeight / (double)tileset.getHeight();
+//        double factor_x = (double)tileWidth / (double)tileset.getWidth();
+//        double factor_y = (double)tileHeight / (double)tileset.getHeight();
         
         int mapTileBeginX, mapTileBeginY;
         int mapTileEndX, mapTileEndY;

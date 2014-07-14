@@ -31,7 +31,7 @@ public class Game implements GLEventListener, KeyListener {
     Texture image = null;
     
     Map map = null;
-    Player hero = null;
+    Player player = null;
     TextRenderer textRenderer = null;
     
     Camera c = Camera.getInstance();
@@ -95,13 +95,15 @@ public class Game implements GLEventListener, KeyListener {
         // Atualiza a câmera com a posição do personagem
         Camera.getInstance().update();
         
+        player.update(map);
+        
         // Desenha
         draw(drawable);
     }
     
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        System.out.println("Reshape: " + width + "x" + height);
+//        System.out.println("Reshape: " + width + "x" + height);
         
         GL gl = drawable.getGL();
         GL2 gl2 = gl.getGL2();
@@ -134,23 +136,21 @@ public class Game implements GLEventListener, KeyListener {
         // Seta limites do ambiente
         c.setEnvironmentBounds(map.getMapWidth(), map.getMapHeight());
         
-        System.out.println("Resolution: " + c.getWidth() + "x" + c.getHeight());
-        System.out.println("Map: " + map.getMapWidth() + "x" + map.getMapHeight());
-        
-        hero = new Player();
-        
-        hero.setX(32);
-        hero.setY(40);
-        hero.setWidth(16);
-        hero.setHeight(24);
-        hero.loadSpritesheet(canvas);
+        // Jogador
+        player = new Player();
+        player.setX(32);
+        player.setY(40);
+//        player.setWidth(16);
+//        player.setHeight(24);
+        player.loadSpritesheet(canvas);
         
         // Define o foco da câmera
-        c.setFocus(hero);
-        
+        c.setFocus(player);
         c.update();
         
-        System.out.println("Camera: " + c.getX() + "x" + c.getY());
+//        System.out.println("Resolution: " + c.getWidth() + "x" + c.getHeight());
+//        System.out.println("Map: " + map.getMapWidth() + "x" + map.getMapHeight());
+//        System.out.println("Camera: " + c.getX() + "x" + c.getY());
     }
 
     @Override
@@ -159,29 +159,9 @@ public class Game implements GLEventListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        int speed = 4;
+        player.keyPressed(e);
         
         switch ( e.getKeyCode() ) {
-            case KeyEvent.VK_RIGHT:
-                if ( hero.getX() + speed <= map.getMapWidth() )
-                    hero.setX(hero.getX() + speed);
-
-                break;
-            case KeyEvent.VK_LEFT:
-                if ( hero.getX() >= speed )
-                    hero.setX(hero.getX() - speed);
-
-                break;
-            case KeyEvent.VK_UP:
-                if ( hero.getY() >= speed )
-                    hero.setY(hero.getY() - speed);
-
-                break;
-            case KeyEvent.VK_DOWN:
-                if ( hero.getY() + speed <= map.getMapHeight() )
-                    hero.setY(hero.getY() + speed);
-
-                break;
             case KeyEvent.VK_ESCAPE:
                 Platform.runLater(new Runnable() {
                     @Override
@@ -210,6 +190,7 @@ public class Game implements GLEventListener, KeyListener {
 
     @Override
     public void keyReleased(java.awt.event.KeyEvent e) {
+        player.keyReleased(e);
     }
     
     private void draw(GLAutoDrawable canvas) {
@@ -221,17 +202,22 @@ public class Game implements GLEventListener, KeyListener {
         gl.glEnable(GL_BLEND);
         
         map.draw(canvas);
-        hero.draw(canvas);
+        player.draw(canvas);
         
         gl.glDisable(GL_BLEND);
         
-        String pos = "> Position: " + hero.getX() + "x" + hero.getY();
 //        String pos = "FrameTime: " + lastFrameTime + " | Position: " + hero.getX() + "x" + hero.getY();
         
         textRenderer.beginRendering(canvas.getWidth(), canvas.getHeight());
-        textRenderer.setColor(Color.cyan);
+        textRenderer.setColor(Color.red);
+        
+        String pos = "> FPS(" + lastFrameTime + ") / Position: " + player.getX() + "x" + player.getY() 
+                   + " / Walking: " + player.isWalking();
         
         textRenderer.draw(pos, 20, canvas.getHeight() - 20);
+        
+        pos = "Frame (" + player.getCurrentFrame() + ") / Time (" + player.getCurrentTime() + ")";
+        textRenderer.draw(pos, 20, canvas.getHeight() - 40);
         
         textRenderer.endRendering();
         

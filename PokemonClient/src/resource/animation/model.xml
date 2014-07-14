@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sprite_animation name="ash_gold">
+	<sprites filepath="gold_ash.png" width="16" height="24" />
+
+	<animations>
+		<!-- direction = right | left | up | down -->
+		<state id="walk" static_time="5">
+			<anim direction="right" beginX="0" beginY="0" sprites="2" />
+			<anim direction="left" beginX="2" beginY="0" sprites="2" />
+			<anim direction="down" beginX="4" beginY="0" sprites="3" />
+			<anim direction="up" beginX="7" beginY="0" sprites="3" />
+
+			<anim direction="right" beginX="0" beginY="0" sprites="2" static_time="5" />
+			<anim direction="up">
+				<sprite time="5" tx="7" ty="0" />
+				<sprite time="5" tx="8" ty="0" />
+				<sprite time="5" tx="9" ty="0" />
+			</anim>
+		</state>
+
+		<state id="byke" static_time="5">
+			<anim direction="down" beginX="0" beginY="1" sprites="3" />
+			<anim direction="up" beginX="3" beginY="1" sprites="3" />
+			<anim direction="right" beginX="6" beginY="1" sprites="2" />
+			<anim direction="left" beginX="8" beginY="1" sprites="2" />
+		</state>
+
+		<state id="fish" static_time="5">
+			<anim direction="down" beginX="2" beginY="2" sprites="1" />
+			<anim direction="up" beginX="3" beginY="2" sprites="1" />
+			<anim direction="right" beginX="0" beginY="2" sprites="1" />
+			<anim direction="left" beginX="1" beginY="2" sprites="1" />
+		</state>
+	</animations>
+</sprite_animation>

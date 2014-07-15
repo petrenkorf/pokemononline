@@ -7,6 +7,7 @@ import javax.media.opengl.GLAutoDrawable;
 public class Character extends Sprite {
     protected Rectangle position;
     protected Direction direction;
+    
     int walkSpeed;
     int runSpeed;
     
@@ -15,14 +16,20 @@ public class Character extends Sprite {
     boolean running;
 
     public Character() {
-        walkSpeed = 4;
-        runSpeed = 8;
+        walkSpeed = 2;
+        runSpeed = 4;
     }
     
+    /**
+     * @return Retorna o sprite corrente
+     */
     public SpriteAnim getCurrentSprite() {
         return animation.get(currentState).anim[direction.getValue()][currentFrame];
     }
     
+    /**
+     * @return Quantidade de sprites de uma determinada animação (estado)
+     */
     public int getCurrentStateSize() {
         return animation.get(currentState).anim[direction.getValue()].length;
     }
@@ -30,10 +37,12 @@ public class Character extends Sprite {
     @Override
     public void draw(GLAutoDrawable drawable) {
         // TODO Auto-generated method stub
-        //lol
     }
     
     @Override
+    /**
+     * Animação do sprite
+     */
     protected void update() {
         if ( walking ) {
             if ( timer == null ) {
@@ -42,20 +51,24 @@ public class Character extends Sprite {
             }
             
             timer = Calendar.getInstance();
-            
-            int totalFrame = getCurrentStateSize();
-            
+
             currentTime += timer.getTimeInMillis() - lastTime;
             lastTime = timer.getTimeInMillis();
             
             SpriteAnim sprite = getCurrentSprite();
+            int totalFrame = getCurrentStateSize();
             
 //            System.out.println("Time: " + currentFrame + " - " + sprite.sx + " " 
 //                                + sprite.sy + " " + sprite.time);
+
+            System.out.println(currentFrame + " (" + sprite.sx + ", " + sprite.sy + ") = " 
+                               + currentTime + "/" + sprite.time);
             
+            // Quando ultrapassa o tempo de um sprite, zera o timer
             if ( currentTime >= sprite.time ) {
                 currentTime = 0;
                 
+                // Zera índice do sprite corrente caso exceda o valor total
                 if ( ++currentFrame >= totalFrame ) {
                     currentFrame = 0;
                 }

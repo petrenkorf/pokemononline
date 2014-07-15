@@ -22,43 +22,39 @@ public class Player extends Character implements Serializable {
     private String verificationCode;
     private String name;
     
-    private int moveCount;
-
+    // Distância para próximo tile
+    private int walkPosition = 0;
+    
     public Player() throws IOException {
-        filepath = "gold_ash.png";
-        
-        spritesheet = null;
-        
-        direction = Direction.RIGHT;
-        
-        position = new Rectangle();
-        
-        moveCount = 0;
-        position.x = 20;
-        position.y = 20;
-        position.width = 20;
-        position.height = 20;
+        initPlayer();
     }
     
     public Player(long id, String verificationCode) throws IOException {
         this.id = id;
         this.verificationCode = verificationCode;
         
-        filepath = "gold_ash.png";
+        initPlayer();
+    }
+    
+    public void initPlayer() {
         spritesheet = null;
+        filepath = "gold_ash.png";
+
+        // Largura do tile + velocidade
+        walkPosition = 16;
+//        walkPosition = 16 - speed;
         
         direction = Direction.RIGHT;
         
         position = new Rectangle();
-        position.x = 20;
-        position.y = 20;
-        position.width = 20;
-        position.height = 20;
+        position.x = 32;
+        position.y = 32;
+        position.width = 16;
+        position.height = 24;
     }
     
     public void loadSpritesheet(GLAutoDrawable canvas) throws IOException {
 //        spritesheet = Sprite.loadTexture(filepath, TextureIO.PNG, canvas);
-        
         loadSpriteAnimation("ash.xml", canvas);
     }
     
@@ -87,18 +83,21 @@ public class Player extends Character implements Serializable {
         spritesheet.enable(gl);
         spritesheet.bind(gl);
         
+        double _leftSpace = c.getLocalX();
+        double _upSpace = c.getLocalY() + 4.0;
+        
         gl2.glBegin(GL2.GL_QUADS);
             gl2.glTexCoord2d(spriteX, spriteY + spriteHeight);
-            gl2.glVertex2d(c.getLocalX(), c.getLocalY());
+            gl2.glVertex2d(_leftSpace, _upSpace);
             
             gl2.glTexCoord2d(spriteX + spriteWidth, spriteY + spriteHeight);
-            gl2.glVertex2d(c.getLocalX() + position.width, c.getLocalY());
+            gl2.glVertex2d(_leftSpace + position.width, _upSpace);
             
             gl2.glTexCoord2d(spriteX + spriteWidth, spriteY);
-            gl2.glVertex2d(c.getLocalX() + position.width, c.getLocalY() + position.height);
+            gl2.glVertex2d(_leftSpace + position.width, _upSpace + position.height);
             
             gl2.glTexCoord2d(spriteX, spriteY);
-            gl2.glVertex2d(c.getLocalX(), c.getLocalY()+ position.height);
+            gl2.glVertex2d(_leftSpace, _upSpace + position.height);
         gl2.glEnd();
         
         spritesheet.disable(gl);
@@ -113,7 +112,7 @@ public class Player extends Character implements Serializable {
             case KeyEvent.VK_DOWN:
             case KeyEvent.VK_LEFT:
                 currentFrame = 0;
-                walking = false;
+//                walking = false;
                 
                 break;
             default:
@@ -124,52 +123,51 @@ public class Player extends Character implements Serializable {
     public void keyPressed(KeyEvent e) {
         switch ( e.getKeyCode() ) {
             case KeyEvent.VK_RIGHT:
-//                if ( !walking ) {
+                if ( !walking ) {
                     walking = true;
 
                     if ( direction != Direction.RIGHT ) {
                         setDirection(Direction.RIGHT);
-                        currentFrame = 0;
                         currentTime = 0;
+                        currentFrame = 0;
                     }
-//                }
+                }
                 
                 break;
             case KeyEvent.VK_LEFT:
-//                if ( !walking ) {
+                if ( !walking ) {
                     walking = true;
 
                     if ( direction != Direction.LEFT ) {
-                        currentFrame = 0;
+                        setDirection(Direction.LEFT);
                         currentTime = 0;
-                        setDirection(Sprite.Direction.LEFT);
+                        currentFrame = 0;
                     }
-//                }
+                }
                 
                 break;
             case KeyEvent.VK_UP:
-//                if ( !walking ) {
+                if ( !walking ) {
                     walking = true;
 
                     if ( direction != Direction.UP ) {
-                        setDirection(Sprite.Direction.UP);
+                        setDirection(Direction.UP);
                         currentTime = 0;
                         currentFrame = 0;
                     }
-//                }
+                }
                 
                 break;
             case KeyEvent.VK_DOWN:
-//                if ( !walking ) {
+                if ( !walking ) {
                     walking = true;
-                    setDirection(Sprite.Direction.DOWN);
 
                     if ( direction != Direction.DOWN ) {
-                        setDirection(Sprite.Direction.DOWN);
+                        setDirection(Direction.DOWN);
                         currentTime = 0;
                         currentFrame = 0;
                     }
-//                }
+                }
                 
                 break;
             default:
@@ -179,33 +177,34 @@ public class Player extends Character implements Serializable {
     
 //    @Override
     public void update(Map map) {
-        int speed = 4;
-        
         if ( walking ) {
-            if ( moveCount++ < 4 ) {
-                moveCount = 0;
+            walkPosition -= walkSpeed;
+            
+            if ( walkPosition <= 0 ) {
+                walkPosition = map.getTileWidth();
+                walking = false;
             }
             
             switch ( direction ) {
                 case DOWN:
-                    if ( getY() + speed <= map.getMapHeight() )
-                        setY(getY() + speed);
+                    if ( getY() + position.height + walkSpeed <= map.getMapHeight() )
+                        setY(getY() + walkSpeed);
                     
                     break;
                 case LEFT:
-                    if ( getX() >= speed )
-                        setX(getX() - speed);
+                    if ( getX() >= walkSpeed )
+                        setX(getX() - walkSpeed);
                     
                     break;
                 case UP:
-                    if ( getY() >= speed )
-                        setY(getY() - speed);
+                    if ( getY() >= walkSpeed )
+                        setY(getY() - walkSpeed);
                     
                     break;
                 case RIGHT:
-                    if ( getX() + speed <= map.getMapWidth() )
-                        setX(getX() + speed);
-                    
+                    if ( getX() + position.width + walkSpeed <= map.getMapWidth() )
+                        setX(getX() + walkSpeed);
+                     
                     break;
             }
             

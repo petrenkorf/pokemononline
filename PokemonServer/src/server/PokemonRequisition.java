@@ -137,27 +137,36 @@ public class PokemonRequisition implements Runnable {
                 try {
                     md = MessageDigest.getInstance("MD5");
                     
-                    // Utiliza nome e data corrente para gerar o hash md5 do validationCode
-                    String nameAndDate = rs.getString("username") + ":" + 
-                                         Calendar.getInstance().getTimeInMillis();
+                    boolean player_online = rs.getBoolean("online");
+                    
+                    // Se player estiver online
+                    if ( player_online ) {
+                        System.out.println("User " + username + " already logged!");
+                        message = Reply.FAIL.toString();
+                    } else {
+                        // Utiliza nome e data corrente para gerar o hash md5 do validationCode
+                        String nameAndDate = rs.getString("username") + ":" + 
+                                             Calendar.getInstance().getTimeInMillis();
 
-                    md.update(nameAndDate.getBytes());
-                    String validationCode = new String(md.digest());
+                        md.update(nameAndDate.getBytes());
+                        String validationCode = new String(md.digest());
 
-                    System.out.println("Creating Player...");
+                        System.out.println("Creating Player...");
+
+                        // TODO Recuperar todos os dados do usuário (pokemons)
+                        player = new Player(rs.getInt("id"), validationCode);
+
+                        System.out.println("Player created...");
+
+                        // Serializa player
+                        System.out.println("Player serializing...");
+
+                        Gson gson = new Gson();
+                        message = gson.toJson(player);
+
+                        System.out.println("Player serialized...");
+                    }
                     
-                    // TODO Recuperar todos os dados do usuário (pokemons)
-                    player = new Player(rs.getInt("id"), validationCode);
-                    
-                    System.out.println("Player created...");
-                    
-                    // Serializa player
-                    System.out.println("Player serializing...");
-                    
-                    Gson gson = new Gson();
-                    message = gson.toJson(player);
-                    
-                    System.out.println("Player serialized...");
                     
                     message = Base64.encodeBase64String(message.getBytes());
                     
@@ -167,6 +176,8 @@ public class PokemonRequisition implements Runnable {
                 } catch (NoSuchAlgorithmException e) {
                     message = Reply.FAIL.toString();
                     System.err.println(this.getClass().getName() + ": " + e.getMessage());
+                } catch ( IOException e ) {
+                    
                 }
             } else {
                 System.out.println("ResultSet is empty!");

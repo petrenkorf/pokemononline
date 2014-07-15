@@ -52,6 +52,8 @@ public abstract class Sprite {
     
     protected int width;
     protected int height;
+    
+    int[] spacing = new int[4];
 //    protected int width = 16;
 //    protected int height = 24;
 
@@ -108,6 +110,9 @@ public abstract class Sprite {
             
             // Estados (caminhando, bicicleta, pescando)
             List<Element> xmlStatesList = xmlAnimations.getChildren("state");
+            
+            // Espaçamento interno dos tiles
+            Element _spacing = xmlAnimations.getChild("spacing");
             Iterator<Element> it = xmlStatesList.iterator();
             
             // Animação
@@ -131,6 +136,14 @@ public abstract class Sprite {
             int beginX;
             int beginY;
             int spritesQty;
+            
+            // Espaçamento interno de cada sprite
+            if ( _spacing != null && _spacing.hasAttributes() ) {
+                spacing[Direction.UP.getValue()] = _spacing.getAttribute("up").getIntValue();
+                spacing[Direction.DOWN.getValue()] = _spacing.getAttribute("down").getIntValue();
+                spacing[Direction.LEFT.getValue()] = _spacing.getAttribute("left").getIntValue();
+                spacing[Direction.RIGHT.getValue()] = _spacing.getAttribute("right").getIntValue();
+            }
             
             // Estados
             while ( it.hasNext() ) {
@@ -201,7 +214,6 @@ public abstract class Sprite {
                     }
                 }
             }
-            System.out.println("");
         } catch (IOException e) {
             System.err.println("Problema na leitura do arquivo: " + e.getMessage());
         } catch (JDOMException e) {

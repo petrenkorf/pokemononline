@@ -13,6 +13,7 @@ import java.awt.DisplayMode;
 import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.Stack;
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -70,23 +71,20 @@ public abstract class AbstractUI {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                initAndShowGUI();
+                // This method is invoked on Swing thread
+                frame = new JFrame();
+
+                fxPanel = new JFXPanel();
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.add(fxPanel);
+                frame.setVisible(true);
+
+                DisplayMode d = Display.getInstance().getCurrentDisplayMode();
+                frame.setSize(new Dimension(d.getWidth(), d.getHeight()));
+                
                 System.out.println("InitShowGUI initiated!");
             }
         });
-    }
-    
-    private static void initAndShowGUI() {
-        // This method is invoked on Swing thread
-        frame = new JFrame();
-        
-        fxPanel = new JFXPanel();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(fxPanel);
-        frame.setVisible(true);
-        
-        DisplayMode d = Display.getInstance().getCurrentDisplayMode();
-        frame.setSize(new Dimension(d.getWidth(), d.getHeight()));
     }
     
     static public void changeCurrentUI(AbstractUI ui) {
@@ -164,6 +162,7 @@ public abstract class AbstractUI {
         this.viewTitle = title;
     }
     
+<<<<<<< HEAD
     public void setSceneContent(final Parent node) {
     	Platform.runLater(new Runnable() {
             @Override
@@ -175,6 +174,19 @@ public abstract class AbstractUI {
 		        fxPanel.setScene(scene);
             }
     	});
+=======
+    public void setSceneContent(Parent node) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                DisplayMode d = Display.getInstance().getCurrentDisplayMode();
+
+                scene = new Scene(node, d.getWidth(), d.getHeight());
+
+                fxPanel.setScene(scene);
+            }
+        });
+>>>>>>> 84d24540d7e6603601b48debde8220145bbe6dc2
     }
     
     public void setFullscreen(boolean fullscreen) {

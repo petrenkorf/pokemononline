@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab text="Server">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+          <Tab text="Players">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="291.0" prefWidth="525.0">
+                     <children>
+                        <VBox layoutX="10.0" layoutY="10.0" prefHeight="350.0" prefWidth="250.0">
+                           <children>
+                              <TextField fx:id="inputUsername" layoutX="14.0" layoutY="27.0" prefHeight="25.0" prefWidth="230.0" promptText="Username" />
+                              <Group>
+                                 <children>
+                                    <CheckBox fx:id="checkOnlinePlayers" mnemonicParsing="false" selected="true" text="Online Players" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" top="10.0" />
+                                 </VBox.margin>
+                              </Group>
+                              <TableView fx:id="tablePlayers" layoutX="14.0" layoutY="65.0" prefWidth="231.0">
+                                <columns>
+                                  <TableColumn prefWidth="154.0" text="Username" />
+                                  <TableColumn prefWidth="95.0" text="Last Login" />
+                                </columns>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </TableView>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

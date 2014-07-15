@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
@@ -25,6 +26,9 @@ public class ServerView extends AbstractUI implements Initializable {
 
     @FXML
     protected TableView tablePlayers;
+    
+    @FXML
+    protected CheckBox checkOnlinePlayers;
     
     public ServerView() {
     }

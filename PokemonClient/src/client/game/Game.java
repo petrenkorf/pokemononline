@@ -131,7 +131,7 @@ public class Game implements GLEventListener, KeyListener {
         map.loadMap("main_2.tmx", canvas, true);
         
         // Text
-        textRenderer = new TextRenderer(new Font("Monospaced", Font.PLAIN, 16));
+        textRenderer = new TextRenderer(new Font("Monospaced", Font.BOLD, 18));
         
         // Seta limites do ambiente
         c.setEnvironmentBounds(map.getMapWidth(), map.getMapHeight());
@@ -209,7 +209,7 @@ public class Game implements GLEventListener, KeyListener {
 //        String pos = "FrameTime: " + lastFrameTime + " | Position: " + hero.getX() + "x" + hero.getY();
         
         textRenderer.beginRendering(canvas.getWidth(), canvas.getHeight());
-        textRenderer.setColor(Color.red);
+        textRenderer.setColor(Color.gray);
         
         String pos = "> FPS(" + lastFrameTime + ") / Position: " + player.getX() + "x" + player.getY() 
                    + " / Walking: " + player.isWalking();

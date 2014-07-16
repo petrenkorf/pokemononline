@@ -61,8 +61,8 @@ public class Character extends Sprite {
 //            System.out.println("Time: " + currentFrame + " - " + sprite.sx + " " 
 //                                + sprite.sy + " " + sprite.time);
 
-            System.out.println(currentFrame + " (" + sprite.sx + ", " + sprite.sy + ") = " 
-                               + currentTime + "/" + sprite.time);
+//            System.out.println(currentFrame + " (" + sprite.sx + ", " + sprite.sy + ") = " 
+//                               + currentTime + "/" + sprite.time);
             
             // Quando ultrapassa o tempo de um sprite, zera o timer
             if ( currentTime >= sprite.time ) {

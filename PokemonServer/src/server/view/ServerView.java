@@ -6,13 +6,14 @@
 
 package server.view;
 
+import client.game.Player;
 import client.ui.AbstractUI;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.TableView;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 /**
@@ -25,7 +26,7 @@ public class ServerView extends AbstractUI implements Initializable {
     protected TextField inputUsername;
 
     @FXML
-    protected TableView tablePlayers;
+    protected ListView<Player> listPlayers;
     
     @FXML
     protected CheckBox checkOnlinePlayers;

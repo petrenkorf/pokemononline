@@ -10,7 +10,6 @@ import db.SQLConnection.SGBD;
 import db.query.SQLQueryPostgre;
 
 /**
- *
  * @author bruno.weig
  */
 public class SQLQueryFactory {

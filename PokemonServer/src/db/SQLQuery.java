@@ -7,7 +7,6 @@
 package db;
 
 /**
- *
  * @author bruno.weig
  */
 public abstract class SQLQuery  {

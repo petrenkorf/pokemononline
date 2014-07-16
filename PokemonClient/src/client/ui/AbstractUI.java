@@ -162,19 +162,6 @@ public abstract class AbstractUI {
         this.viewTitle = title;
     }
     
-<<<<<<< HEAD
-    public void setSceneContent(final Parent node) {
-    	Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-		        DisplayMode d = Display.getInstance().getCurrentDisplayMode();
-		        
-		        scene = new Scene(node, d.getWidth(), d.getHeight());
-		        
-		        fxPanel.setScene(scene);
-            }
-    	});
-=======
     public void setSceneContent(Parent node) {
         Platform.runLater(new Runnable() {
             @Override
@@ -186,7 +173,6 @@ public abstract class AbstractUI {
                 fxPanel.setScene(scene);
             }
         });
->>>>>>> 84d24540d7e6603601b48debde8220145bbe6dc2
     }
     
     public void setFullscreen(boolean fullscreen) {

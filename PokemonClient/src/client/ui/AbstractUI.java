@@ -23,6 +23,7 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javafx.application.Platform;
 
 /**
  *
@@ -99,7 +100,7 @@ public abstract class AbstractUI {
      * 
      * @param listener 
      */
-    public void initGL(Game listener) {
+    public void initGL(final Game listener) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

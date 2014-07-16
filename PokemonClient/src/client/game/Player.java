@@ -25,6 +25,8 @@ public class Player extends Character implements Serializable {
     // Distância para próximo tile
     private int walkPosition = 0;
     
+    private boolean[] keys = new boolean[4];
+    
     public Player() throws IOException {
         initPlayer();
     }
@@ -51,6 +53,11 @@ public class Player extends Character implements Serializable {
         position.y = 32;
         position.width = 16;
         position.height = 24;
+        
+        this.keys[Direction.UP.getValue()] = false;
+        this.keys[Direction.DOWN.getValue()] = false;
+        this.keys[Direction.RIGHT.getValue()] = false;
+        this.keys[Direction.LEFT.getValue()] = false;
     }
     
     public void loadSpritesheet(GLAutoDrawable canvas) throws IOException {
@@ -106,6 +113,31 @@ public class Player extends Character implements Serializable {
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         
+        if(key == KeyEvent.VK_UP){
+        	this.keys[Direction.UP.getValue()] = false;
+        }
+        
+        if(key == KeyEvent.VK_DOWN){
+        	this.keys[Direction.DOWN.getValue()] = false;
+        }
+        
+        if(key == KeyEvent.VK_LEFT){
+        	this.keys[Direction.LEFT.getValue()] = false;
+        }
+        
+        if(key == KeyEvent.VK_RIGHT){
+        	this.keys[Direction.RIGHT.getValue()] = false;
+        }
+        
+      /*  if(this.keys[Direction.RIGHT.getValue()] == false &&
+    		this.keys[Direction.LEFT.getValue()] == false &&
+    		this.keys[Direction.UP.getValue()] == false &&
+    		this.keys[Direction.DOWN.getValue()] == false ){
+        	
+        	walking = false;
+        }*/
+        
+        /*
         switch ( key ) {
             case KeyEvent.VK_UP:
             case KeyEvent.VK_RIGHT:
@@ -117,15 +149,16 @@ public class Player extends Character implements Serializable {
                 break;
             default:
                 break;
-        }
+        }*/
     }
     
     public void keyPressed(KeyEvent e) {
         switch ( e.getKeyCode() ) {
             case KeyEvent.VK_RIGHT:
-                if ( !walking ) {
+            	this.keys[Direction.RIGHT.getValue()] = true;
+            	if ( !walking ) {
                     walking = true;
-
+                    
                     if ( direction != Direction.RIGHT ) {
                         setDirection(Direction.RIGHT);
                         currentTime = 0;
@@ -135,9 +168,10 @@ public class Player extends Character implements Serializable {
                 
                 break;
             case KeyEvent.VK_LEFT:
-                if ( !walking ) {
+            	this.keys[Direction.LEFT.getValue()] = true;
+            	if ( !walking ) {
                     walking = true;
-
+                    this.keys[Direction.LEFT.getValue()] = true;
                     if ( direction != Direction.LEFT ) {
                         setDirection(Direction.LEFT);
                         currentTime = 0;
@@ -147,8 +181,10 @@ public class Player extends Character implements Serializable {
                 
                 break;
             case KeyEvent.VK_UP:
-                if ( !walking ) {
-                    walking = true;
+            	this.keys[Direction.UP.getValue()] = true;
+            	if ( !walking ) {
+                	this.keys[Direction.UP.getValue()] = true;
+                	walking = true;
 
                     if ( direction != Direction.UP ) {
                         setDirection(Direction.UP);
@@ -159,9 +195,10 @@ public class Player extends Character implements Serializable {
                 
                 break;
             case KeyEvent.VK_DOWN:
-                if ( !walking ) {
+            	this.keys[Direction.DOWN.getValue()] = true;
+            	if ( !walking ) {
                     walking = true;
-
+                    this.keys[Direction.DOWN.getValue()] = true;
                     if ( direction != Direction.DOWN ) {
                         setDirection(Direction.DOWN);
                         currentTime = 0;
@@ -182,9 +219,16 @@ public class Player extends Character implements Serializable {
             
             if ( walkPosition <= 0 ) {
                 walkPosition = map.getTileWidth();
-                walking = false;
+                
+                if(this.keys[Direction.RIGHT.getValue()] == false &&
+                		this.keys[Direction.LEFT.getValue()] == false &&
+                		this.keys[Direction.UP.getValue()] == false &&
+                		this.keys[Direction.DOWN.getValue()] == false ){
+                    	
+                    	walking = false;
+                    }
             }
-            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
             switch ( direction ) {
                 case DOWN:
                     if ( getY() + position.height + walkSpeed <= map.getMapHeight() )

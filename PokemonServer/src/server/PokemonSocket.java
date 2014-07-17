@@ -9,6 +9,7 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javafx.scene.control.Label;
@@ -28,8 +29,8 @@ public class PokemonSocket implements Runnable {
     
     BlockingQueue<Socket> requisitionQueue = new LinkedBlockingQueue<Socket>();
     
-    public PokemonSocket() {
-        p = new PokemonRequisition(requisitionQueue);
+    public PokemonSocket(List<PlayerServer> playerOnlineList) {
+        p = new PokemonRequisition(requisitionQueue, playerOnlineList);
         
         Thread t = new Thread(p);
         t.start();
@@ -59,7 +60,7 @@ public class PokemonSocket implements Runnable {
             try {
                 requestSocket = server.accept();
                 
-                System.out.println("Received Socked!");
+//                System.out.println("Received Socked!");
 
                 requisitionQueue.put(requestSocket);
             } catch (IOException e) {

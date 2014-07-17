@@ -8,8 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/mainview.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/mainview.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox layoutX="200.0" layoutY="53.0" prefHeight="259.0" prefWidth="200.0">
          <children>
@@ -28,7 +27,7 @@
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Button>
-            <Button fx:id="btnQuit" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="200.0" text="Quit" />
+            <Button fx:id="btnLogout" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="200.0" text="Logout" />
          </children>
       </VBox>
    </children>

@@ -9,6 +9,7 @@ package db.query;
 import db.SQLQuery;
 
 /**
+ *
  * @author bruno.weig
  */
 public class SQLQueryPostgre extends SQLQuery {

@@ -37,7 +37,7 @@ public class ClientRequest {
     public enum Request {
         LOGIN("login"),
         PRESS("press"),
-        QUIT("quit");
+        LOGOUT("logout");
         
         String value;
         
@@ -65,7 +65,7 @@ public class ClientRequest {
     static ClientRequest clientRequest = null;
     
     SocketClient socket = null;
-    String message = "";
+    String request = "";
     String reply = "";
     
     private ClientRequest() {
@@ -89,7 +89,6 @@ public class ClientRequest {
         // Gera o hash md5 da senha digitada pelo usuário
         try {
             md = MessageDigest.getInstance("MD5");
-
             md.update(password.getBytes());
 
             passwordHash = Hex.encodeHexString(md.digest());
@@ -97,14 +96,14 @@ public class ClientRequest {
             System.err.println(this.getClass().getName() + ": " + e.getMessage());
         }
         
-        message = "0:0:" + Request.LOGIN + ":" + username + " " + passwordHash;
+        request = makeRequest(Request.LOGIN, username + " " + passwordHash);
         
-        String q = socket.sendMessage(message).trim();
+        String requestTrimmed = socket.sendMessage(request).trim();
         
-        System.out.println("Serialized Object Size: " + q.length());
-        System.out.println("Deserialize: " + q);
+//        System.out.println("Serialized Object Size: " + q.length());
+//        System.out.println("Deserialize: " + q);
         
-        reply = new String(Base64.decodeBase64(q));
+        reply = new String(Base64.decodeBase64(requestTrimmed));
         
         if ( reply.equals(Reply.FAIL.toString()) ) {
             return null;
@@ -114,40 +113,99 @@ public class ClientRequest {
             player = gson.fromJson(reply, Player.class);
         }
         
+        socket = null;
+        
         return player;
     }
     
+    /**
+     * Trata as entradas do usuário
+     * 
+     * @param command
+     * @return 
+     */
     public String press(Command command) {
         socket = new SocketClient();
         
-        message = "press ";
+        String direction  = "";
         
         switch ( command ) {
             case UP:
-                message += "up";
+                direction = "up";
                 break;
             case RIGHT:
-                message += "right";
+                direction = "right";
                 break;
             case DOWN:
-                message += "down";
+                direction = "down";
                 break;
             case LEFT:
-                message += "left";
+                direction = "left";
                 break;
             case ACTION:
-                message += "action";
+                direction = "action";
                 break;
         }
         
-        return socket.sendMessage(message);
+        request = makeRequest(Request.PRESS, direction);
+        
+        reply = socket.sendMessage(request);
+        
+        socket = null;
+        
+        return reply;
     }
     
-    public String quit() {
+    private String makeRequest(Request command) {
+        return makeRequest(command, null);
+    }
+    
+    /**
+     * Monta uma requisição com id e código de verificação do usuário no formato: 
+     * <id>:<verificationCode>:<command>:<parameters*>
+     * 
+     * @param command
+     * @param parameters
+     * @return 
+     */
+    private String makeRequest(Request command, String parameters) {
+        String _message = "";
+        
+        if ( parameters == null || parameters.isEmpty() ) {
+            parameters = "0";
+        }
+        
+        // Caso usuário esteja logado
+        if ( player != null ) {
+            _message = player.getId() + ":" + player.getVerificationCode() + ":" + 
+                    command.toString() + ":" + parameters;
+        } else {
+            // Login
+            _message = "0:0:" + command.toString() + ":" + parameters;
+        }
+        
+        return _message;
+    }
+    
+    /**
+     * Realia logout do jogo
+     * 
+     * @return 
+     */
+    public boolean logout() {
         socket = new SocketClient();
         
-        message = "quit";
+        request = makeRequest(Request.LOGOUT);
         
-        return socket.sendMessage(message);
+        reply = socket.sendMessage(request);
+        
+        // Desaloca player caso logout ocorrer com sucesso
+        if ( reply.equals(Reply.OK) ) {
+            player = null;
+        }
+        
+        socket = null;
+        
+        return true;
     }
 }

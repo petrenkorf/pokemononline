@@ -51,7 +51,6 @@ public class Game implements GLEventListener, KeyListener {
         GL gl = drawable.getGL();
         
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//        gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1);
         
         try {
             loadResource(drawable);
@@ -139,7 +138,7 @@ public class Game implements GLEventListener, KeyListener {
         // Jogador
         player = new Player();
         player.setX(32);
-        player.setY(40);
+        player.setY(32);
 //        player.setWidth(16);
 //        player.setHeight(24);
         player.loadSpritesheet(canvas);
@@ -177,6 +176,7 @@ public class Game implements GLEventListener, KeyListener {
                         // Sair do jogo
                         if ( response == Dialog.Actions.YES ) {
                             fps.stop();
+                            fps = null;
                             AbstractUI.destroyGL();
                             AbstractUI.previousUI();
                         }

@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
@@ -26,6 +27,9 @@ public class LoginView extends AbstractUI implements Initializable {
     
     @FXML
     protected PasswordField inputPassword;
+    
+    @FXML
+    protected Label labelLoginMessage;
     
     @FXML
     protected Button buttonLogin;

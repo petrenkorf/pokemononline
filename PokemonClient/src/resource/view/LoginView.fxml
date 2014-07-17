@@ -9,7 +9,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <StackPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="250.0" prefHeight="300.0" prefWidth="250.0" stylesheets="@../css/loginview.css">
@@ -37,12 +36,20 @@
                   <Insets top="10.0" />
                </VBox.margin>
             </HBox>
+            <HBox>
+               <children>
+                  <Label fx:id="labelLoginMessage" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </HBox>
             <HBox alignment="TOP_RIGHT">
                <children>
                   <Button fx:id="buttonLogin" mnemonicParsing="false" text="Login" />
                </children>
                <VBox.margin>
-                  <Insets top="20.0" />
+                  <Insets />
                </VBox.margin>
             </HBox>
          </children>

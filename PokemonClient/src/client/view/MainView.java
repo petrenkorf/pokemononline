@@ -20,7 +20,7 @@ import javafx.scene.control.Button;
 //public class LoginView extends AbstractUI  {
 public class MainView extends AbstractUI implements Initializable {
     @FXML
-    protected Button btnQuit;
+    protected Button btnLogout;
     
     @FXML
     protected Button btnStartGame;

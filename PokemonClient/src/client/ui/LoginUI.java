@@ -6,7 +6,9 @@
 
 package client.ui;
 
+import client.communication.ClientRequest;
 import client.communication.SocketClient;
+import client.game.Player;
 import static client.ui.AbstractUI.changeCurrentUI;
 import client.view.LoginView;
 import javafx.event.ActionEvent;
@@ -20,7 +22,7 @@ public class LoginUI extends LoginView {
     SocketClient s = new SocketClient();
     
     public LoginUI() {
-        setViewTitle("Testando");
+        setViewTitle("Login");
         
         loadFXML();
         
@@ -32,19 +34,20 @@ public class LoginUI extends LoginView {
         buttonLogin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                changeCurrentUI(new MainUI());
+//                changeCurrentUI(new MainUI());
                 
-//                Player player = ClientRequest.getInstance().login(
-//                    inputUsername.getText(), inputPassword.getText()
-//                );
-//                
-//                if ( player != null ) {
-//                    System.out.println("Logged");
-//                    
-//                    changeCurrentUI(new MainUI());
-//                } else {
-//                    System.out.println("Not Logged");
-//                }
+                Player player = ClientRequest.getInstance().login(
+                    inputUsername.getText(), inputPassword.getText()
+                );
+                
+                if ( player != null ) {
+                    System.out.println("Logged");
+                    
+                    changeCurrentUI(new MainUI());
+                } else {
+                    labelLoginMessage.setText("Invalid username or password!");
+                    System.out.println("Not Logged");
+                }
             }
         });
     }

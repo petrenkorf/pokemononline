@@ -12,8 +12,8 @@ import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.io.IOException;
 import java.util.EmptyStackException;
+import java.util.List;
 import java.util.Stack;
-import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -129,8 +129,14 @@ public abstract class AbstractUI {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                fxPanel.setVisible(true);
+                // Retorna a resolução
+                List<DisplayMode> res = Display.getInstance().getResolutionsPerRatio(
+                        Display.DisplayRatio.Ratio4_3);
+                DisplayMode mode = res.get(0);
+                frame.setSize(mode.getWidth(), mode.getHeight());
                 
+                // Esconde o canvas (OpenGL) e mostra a UI (javafx)
+                fxPanel.setVisible(true);
                 canvas.setVisible(fullscreen);
             }
         });

@@ -8,22 +8,25 @@ package server;
 
 import client.communication.ClientRequest.Request;
 import client.communication.ClientRequest.Reply;
+import client.game.Player;
+import com.google.gson.Gson;
 import db.SQLConnection;
+import db.SQLQuery;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
-import client.game.Player;
-import com.google.gson.Gson;
-import db.SQLQuery;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 
 /**
  *
@@ -38,10 +41,13 @@ public class PokemonRequisition implements Runnable {
     
     Socket currentRequisition = null;
     
+    List<PlayerServer> playerOnlineList;
+    
     boolean executing = true;
     
-    public PokemonRequisition(BlockingQueue<Socket> requisitions) {
+    public PokemonRequisition(BlockingQueue<Socket> requisitions, List<PlayerServer> playerOnlineList) {
         requisitioQueue = requisitions;
+        this.playerOnlineList = playerOnlineList;
     }
     
     public void stop() {
@@ -64,34 +70,32 @@ public class PokemonRequisition implements Runnable {
 
                     message = inputReader.readLine();
 
-                    System.out.println("Message: " + message);
-                    
-                    String[] requestPart = message.split(":");
                     String[] parameters = null;
                     
-                    System.out.println("Segments: " + requestPart.length);
+                    // Divide a mensagem em 4 segmentos
+                    String[] requestPart = message.split(":");
                     
+                    Integer id = new Integer(requestPart[0]);
+                    String verificationCode = requestPart[1];
                     command = requestPart[2];
-                    
-                    // Parâmetros
                     parameters = requestPart[3].split(" ");
 
+                    // Imprime a mensagem com um cabeçalho
+                    System.out.println("Received message from user_id=" + id + "(ip=" + 
+                            currentRequisition.getInetAddress().toString() + ") with verCode=" + verificationCode);
+                    System.out.println("  message=" + message + " (" + output.getBytes().length + " bytes)");
+                    
                     // Verifica qual o comando na requisição
                     if ( command.equals(Request.LOGIN.toString()) ) {
                         output = login(parameters[0], parameters[1]);
                     } else if ( command.equals(Request.PRESS.toString()) ) {
                         output = press(parameters[0]);
                     } else {
-                        output = quit();
+                        output = logout(id, verificationCode);
                     }
-                    
-                    System.out.println("SIZE: " + output.getBytes().length);
                     
                     outputStream = currentRequisition.getOutputStream();
                     outputStream.write(output.getBytes());
-
-                    System.out.println("Message from " + currentRequisition.getInetAddress().toString() + " = " +
-                                        message);
                 } catch (IOException e) {
                     System.err.println("Socket Error: " + e.getMessage());
                 } catch (InterruptedException e) {
@@ -115,8 +119,6 @@ public class PokemonRequisition implements Runnable {
     public String login(String username, String password) {
         String message = "";
         
-        System.out.println("Login player");
-        
         try {
             connection.connect();
 
@@ -137,10 +139,10 @@ public class PokemonRequisition implements Runnable {
                 try {
                     md = MessageDigest.getInstance("MD5");
                     
-                    boolean player_online = rs.getBoolean("online");
+                    boolean playerOnline = rs.getBoolean("online");
                     
                     // Se player estiver online
-                    if ( player_online ) {
+                    if ( playerOnline ) {
                         System.out.println("User " + username + " already logged!");
                         message = Reply.FAIL.toString();
                     } else {
@@ -149,28 +151,31 @@ public class PokemonRequisition implements Runnable {
                                              Calendar.getInstance().getTimeInMillis();
 
                         md.update(nameAndDate.getBytes());
-                        String validationCode = new String(md.digest());
-
-                        System.out.println("Creating Player...");
+                        String validationCode = new String(Hex.encodeHex(md.digest()));
+                        
+//                        System.out.println("Creating Player...");
 
                         // TODO Recuperar todos os dados do usuário (pokemons)
                         player = new Player(rs.getInt("id"), validationCode);
+                        player.setName(rs.getString("username"));
 
-                        System.out.println("Player created...");
+                        playerOnlineList.add(new PlayerServer(player.getId(), 
+                                player.getName(), player.getVerificationCode()));
+                        
+//                        System.out.println("Player created...");
 
                         // Serializa player
-                        System.out.println("Player serializing...");
+//                        System.out.println("Player serializing...");
 
                         Gson gson = new Gson();
                         message = gson.toJson(player);
 
-                        System.out.println("Player serialized...");
+//                        System.out.println("Player serialized...");
                     }
-                    
                     
                     message = Base64.encodeBase64String(message.getBytes());
                     
-                    System.out.println("PlayerString Size: " + message.length() + " bytes!");
+//                    System.out.println("PlayerString Size: " + message.length() + " bytes!");
                     
                     System.out.println("Message: " + message);
                 } catch (NoSuchAlgorithmException e) {
@@ -197,7 +202,37 @@ public class PokemonRequisition implements Runnable {
         return Reply.OK.toString();
     }
     
-    public String quit() {
-        return Reply.OK.toString();
+    /**
+     * Procura jogador pelo id
+     * 
+     * @param id
+     * @return 
+     */
+    private PlayerServer searchPlayer(long id) {
+        Iterator<PlayerServer> it = playerOnlineList.iterator();
+        PlayerServer player;
+        
+        while ( it.hasNext() ) {
+            player = it.next();
+            
+            if ( player.getId() == id) {
+                return player;
+            }
+        }
+        
+        return null;
+    }
+    
+    public String logout(long id, String verificationCode) {
+        PlayerServer player = searchPlayer(id);
+        
+        if ( player != null ) {
+            if ( player.getVerificationCode().equals(verificationCode) ) {
+                playerOnlineList.remove(player);
+                return Reply.OK.toString();
+            }
+        }
+        
+        return Reply.FAIL.toString();
     }
 }

@@ -6,10 +6,8 @@
 
 package server.ui;
 
-import client.game.Player;
 import db.SQLConnection;
 import db.SQLQuery;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,6 +22,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.util.Callback;
+import server.PlayerServer;
 import server.PokemonSocket;
 import server.view.ServerView;
 
@@ -33,26 +32,32 @@ import server.view.ServerView;
  */
 public class ServerUI extends ServerView {
     SQLConnection db = null;
-    Thread t = null;
+    Thread pokemonThread = null;
     
-    PokemonSocket s = null;
+    PokemonSocket pokemonSocket = null;
+    
+    List<PlayerServer> playerOnlineList = new ArrayList<>();
+    ObservableList<PlayerServer> observablePlayerList;
     
     public ServerUI() {
         setViewTitle("Server View");
         
         loadFXML();
         
+        initDB();
+        
+        pokemonSocket = new PokemonSocket(playerOnlineList);
+        pokemonThread = new Thread(pokemonSocket);
+        pokemonThread.start();
+        
         registerEvents();
     }
 
+    /**
+     * Registra os eventos
+     */
     public void registerEvents() {
-        initDB();
-//        test();
-        
-        s = new PokemonSocket();
-        t = new Thread(s);
-        t.start();
-        
+        // Mostra lista de jogadores (total ou somente online)
         checkOnlinePlayers.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -63,28 +68,33 @@ public class ServerUI extends ServerView {
         listPlayers.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         
         listPlayers.getSelectionModel().selectedItemProperty().addListener(
-            new ChangeListener<Player>() {
-
+            new ChangeListener<PlayerServer>() {
             @Override
-            public void changed(ObservableValue<? extends Player> observable, 
-                    Player oldValue, Player newValue) {
-//                System.out.println("ID " + oldValue.getId());
-                System.out.println("Select");
+            public void changed(ObservableValue<? extends PlayerServer> observable, 
+                    PlayerServer oldValue, PlayerServer newValue) {
+                if ( newValue != null ) {
+                    System.out.println("Selected " + newValue.getUsername() + " (id=" +
+                            newValue.getId() + ", verCod=" + newValue.getVerificationCode() + ")");
+                }
             }
         });
     }
     
+    /**
+     * Carrega lista de jogadores
+     * @param onlinePlayers 
+     */
     public void loadPlayerList(boolean onlinePlayers) {
-        List<Player> playerList = new ArrayList<Player>();
-        Player player;
+        List<PlayerServer> playerList = new ArrayList<>();
+        PlayerServer player;
         
-        ObservableList<Player> myObservableList = FXCollections.observableList(playerList);
-        listPlayers.setItems(myObservableList);
-        
-        SQLConnection connection = SQLConnection.getInstance();
-        
+        // Somente jogadores online
         if ( onlinePlayers ) {
         } else {
+            // Todos os jogadores 
+            
+            SQLConnection connection = SQLConnection.getInstance();
+            
             try {
                 connection.connect();
                 
@@ -94,30 +104,31 @@ public class ServerUI extends ServerView {
                 ResultSet result = connection.execute(query);
                 
                 while ( result.next() ) {
-                    player = new Player(result.getInt("id"), " ");
-                    player.setName(result.getString("username"));
+                    player = new PlayerServer(result.getInt("id"), result.getString("username"), "0");
                     
                     playerList.add(player);
                 }
                 
                 connection.disconnect();
+                
+                ObservableList<PlayerServer> myObservableList = FXCollections.observableList(playerList);
+                listPlayers.setItems(myObservableList);
             } catch (SQLException e) {
-                System.err.println("Exception: " + e.getMessage());
-            } catch (IOException e) {
                 System.err.println("Exception: " + e.getMessage());
             }
         }
         
-        listPlayers.setCellFactory(new Callback<ListView<Player>, ListCell<Player>>(){
+        // Como cada item da lista é desenhado
+        listPlayers.setCellFactory(new Callback<ListView<PlayerServer>, ListCell<PlayerServer>>(){
             @Override
-            public ListCell<Player> call(ListView<Player> p) {
-                ListCell<Player> cell = new ListCell<Player>() {
+            public ListCell<PlayerServer> call(ListView<PlayerServer> p) {
+                ListCell<PlayerServer> cell = new ListCell<PlayerServer>() {
                     @Override
-                    protected void updateItem(Player p, boolean bln) {
-                        super.updateItem(p, bln);
+                    protected void updateItem(PlayerServer p, boolean empty) {
+                        super.updateItem(p, empty);
                         
                         if (p != null) {
-                            setText(p.getName());
+                            setText(p.getUsername());
                         }
                     }
                 };
@@ -127,6 +138,9 @@ public class ServerUI extends ServerView {
         });
     }
     
+    /**
+     * Inicializa o banco de dados
+     */
     public void initDB() {
         db = SQLConnection.getInstance();
         
@@ -135,30 +149,5 @@ public class ServerUI extends ServerView {
         db.setUsername("postgres");
         db.setPassword("5624123");
         db.setDatabase("pokemon");
-    }
-    
-    public void test() {
-        SQLQuery query;
-        
-        try {
-            db.connect();
-            
-            query = db.newQuery();
-            
-            query.select("*").from("users");
-            ResultSet rs = db.execute(query);
-            
-            while ( rs.next() ) {
-                System.out.println(rs.getInt("id") + ", " + rs.getString("username"));
-            }
-            
-            System.out.println("Database connected: " + rs.getRow() + 1 + " results!");
-            
-            rs.close();
-            
-            db.disconnect();
-        } catch (SQLException e) {
-            System.err.println("SQL Problem: " + e.getMessage());
-        }
     }
 }

@@ -6,6 +6,7 @@
 
 package client.ui;
 
+import client.communication.ClientRequest;
 import client.view.MainView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,7 +17,7 @@ import javafx.event.EventHandler;
  */
 public class MainUI extends MainView {
     public MainUI() {
-        setViewTitle("Main");
+        setViewTitle("Main Menu");
         
         loadFXML();
         
@@ -33,10 +34,14 @@ public class MainUI extends MainView {
         });
         
         // Voltar para tela de login
-        btnQuit.setOnAction(new EventHandler<ActionEvent>() {
+        btnLogout.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                previousUI();
+                if ( ClientRequest.getInstance().logout() ) {
+                    previousUI();
+                } else {
+                    System.out.println("Problem to leave game!");
+                }
             }
         });
         

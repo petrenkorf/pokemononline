@@ -9,13 +9,14 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 
 /**
- *
+ * Classe responsável por receber e enfileirar as requisições
+ * 
  * @author bruno.weig
  */
 public class PokemonSocket implements Runnable {
@@ -25,14 +26,14 @@ public class PokemonSocket implements Runnable {
     Label text = null;
     int port = 8686;
     
-    PokemonRequisition p = null;
+    PokemonRequisition requisition = null;
     
     BlockingQueue<Socket> requisitionQueue = new LinkedBlockingQueue<Socket>();
     
-    public PokemonSocket(List<PlayerServer> playerOnlineList) {
-        p = new PokemonRequisition(requisitionQueue, playerOnlineList);
+    public PokemonSocket(ObservableList<PlayerServer> playerOnlineList) {
+        requisition = new PokemonRequisition(requisitionQueue, playerOnlineList);
         
-        Thread t = new Thread(p);
+        Thread t = new Thread(requisition);
         t.start();
   
 //        Platform.runLater(p);
@@ -41,9 +42,9 @@ public class PokemonSocket implements Runnable {
     }
     
     public void stop() {
-        p.stop();
-        
         executing = false;
+        
+        requisition.stop();
     }
     
     @Override

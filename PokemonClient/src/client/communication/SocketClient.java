@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  *
@@ -32,7 +33,7 @@ public class SocketClient {
             
             serverAddress = buf.readLine();
             
-            System.out.println("Address: " + serverAddress);
+//            System.out.println("Address: " + serverAddress);
             
             buf.close();
         } catch (FileNotFoundException e) {
@@ -42,33 +43,46 @@ public class SocketClient {
         }
     }
     
+    /**
+     * Envia a mensagem para o servidor e retorna a resposta
+     * 
+     * @param message
+     * @return 
+     */
     public String sendMessage(String message) {
-        Socket s = null;
+        Socket socket = null;
         
         PrintStream stream = null;
                 
         try {
-            s = new Socket(serverAddress, serverPort);
+            socket = new Socket(serverAddress, serverPort);
 
-            stream = new PrintStream(s.getOutputStream());
+            stream = new PrintStream(socket.getOutputStream());
 
+            // Envia requisiçao
             stream.println(message);
             
-            s.getInputStream().read(response);
+            // Lê resposta
+            socket.getInputStream().read(response);
         } catch (IOException e) {
             System.out.println("Problem connecting server!");
         } finally {
             try {
+                // Fecha stream
                 if ( stream != null )
                     stream.close();
 
-                if ( s != null )
-                    s.close();
+                if ( socket != null )
+                    socket.close();
             } catch (IOException e) {
                 System.err.println("Problem closing socket: " + e.getMessage());
             }
         }
         
-        return new String(response);
+        // Decodifica resposta em base 64
+        String _reply = new String(Base64.decodeBase64(response));
+        
+        // Remove o espaço nas extremidades da string de resposta
+        return _reply.trim();
     }
 }

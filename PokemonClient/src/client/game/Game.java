@@ -5,13 +5,11 @@ import client.ui.AbstractUI;
 import client.util.Camera;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.TextRenderer;
-import com.jogamp.opengl.util.texture.Texture;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.util.Calendar;
 import javafx.application.Platform;
 import javax.media.opengl.GL;
 import static javax.media.opengl.GL2.*;
@@ -27,19 +25,15 @@ import org.controlsfx.dialog.Dialogs;
  * @author bruno.weig
  */
 public class Game implements GLEventListener, KeyListener {
+    FrameStatistics frames = new FrameStatistics(40);
     FPSAnimator fps = null;
-    Texture image = null;
     
+    Camera c = Camera.getInstance();
     Map map = null;
     Player player = null;
     TextRenderer textRenderer = null;
     
-    Camera c = Camera.getInstance();
-    
-    long lastTime;
-    long lastFrameTime = 0;
-    
-    int framesPerSecond = 40;
+    boolean gameRunning = true;
     
     public Game() {
     }
@@ -57,7 +51,8 @@ public class Game implements GLEventListener, KeyListener {
             
             System.out.println("Resource loaded!");
             
-            fps = new FPSAnimator(drawable, framesPerSecond);
+            // Inicializa o timer que executa o mainLoop de acordo com uma taxa de fps
+            fps = new FPSAnimator(drawable, frames.getFpsExpected());
             fps.start();
         } catch (IOException e) {
             System.err.println("Init: " + e.getMessage());
@@ -78,11 +73,23 @@ public class Game implements GLEventListener, KeyListener {
      */
     @Override
     public void display(GLAutoDrawable drawable) {
-        lastTime = Calendar.getInstance().getTimeInMillis();
-        
-        mainLoop(drawable);
-        
-        lastFrameTime = Calendar.getInstance().getTimeInMillis() - lastTime;
+        if ( gameRunning ) {
+            frames.before();
+
+            mainLoop(drawable);
+
+            frames.after();
+        } else {
+            // Remove o timer que executa o "loop" principal
+            if ( fps != null ) {
+                fps.stop();
+                fps.remove(drawable);
+                fps = null;
+
+                AbstractUI.destroyGL();
+                AbstractUI.previousUI();
+            }
+        }
     }
 
     /**
@@ -129,7 +136,7 @@ public class Game implements GLEventListener, KeyListener {
         map = new Map();
         map.loadMap("main_2.tmx", canvas, true);
         
-        // Text
+        // Objeto para renderizar strings
         textRenderer = new TextRenderer(new Font("Monospaced", Font.BOLD, 18));
         
         // Seta limites do ambiente
@@ -139,8 +146,6 @@ public class Game implements GLEventListener, KeyListener {
         player = new Player();
         player.setX(32);
         player.setY(32);
-//        player.setWidth(16);
-//        player.setHeight(24);
         player.loadSpritesheet(canvas);
         
         // Define o foco da câmera
@@ -158,33 +163,32 @@ public class Game implements GLEventListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        player.keyPressed(e);
-        
-        switch ( e.getKeyCode() ) {
-            case KeyEvent.VK_ESCAPE:
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        Action response = Dialogs.create().
-                                    title("Exit Game").
-                                    masthead(null).
-                                    message("Do you really want do close the game ?").
-                                    showConfirm();
+        if ( gameRunning ) {
+            player.keyPressed(e);
 
-                        System.out.println(response.toString());
+            switch ( e.getKeyCode() ) {
+                case KeyEvent.VK_ESCAPE:
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Action response = Dialogs.create().
+                                        title("Exit Game").
+                                        masthead(null).
+                                        message("Do you really want do close the game ?").
+                                        showConfirm();
 
-                        // Sair do jogo
-                        if ( response == Dialog.Actions.YES ) {
-                            fps.stop();
-                            fps = null;
-                            AbstractUI.destroyGL();
-                            AbstractUI.previousUI();
+    //                        System.out.println(response.toString());
+
+                            // Sair do jogo
+                            if ( response == Dialog.Actions.YES ) {
+                                gameRunning = false;
+                            }
                         }
-                    }
-                });
-                break;
-            default:
-                break;
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -211,8 +215,9 @@ public class Game implements GLEventListener, KeyListener {
         textRenderer.beginRendering(canvas.getWidth(), canvas.getHeight());
         textRenderer.setColor(Color.gray);
         
-        String pos = "> FPS(" + lastFrameTime + ") / Position: " + player.getX() + "x" + player.getY() 
-                   + " / Walking: " + player.isWalking();
+        String pos = "> FPS(" + frames.getFpsActual() + ") / Frames(" + 
+                frames.getFramesTimeMean() + "/" + frames.getTimePerFrameExpected() + 
+                ") Position: " + player.getX() + "x" + player.getY() + " / Walking: " + player.isWalking();
         
         textRenderer.draw(pos, 20, canvas.getHeight() - 20);
         

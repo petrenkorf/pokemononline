@@ -34,20 +34,20 @@ public class LoginUI extends LoginView {
         buttonLogin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-//                changeCurrentUI(new MainUI());
+                changeCurrentUI(new MainUI());
                 
-                Player player = ClientRequest.getInstance().login(
-                    inputUsername.getText(), inputPassword.getText()
-                );
-                
-                if ( player != null ) {
-                    System.out.println("Logged");
-                    
-                    changeCurrentUI(new MainUI());
-                } else {
-                    labelLoginMessage.setText("Invalid username or password!");
-                    System.out.println("Not Logged");
-                }
+//                Player player = ClientRequest.getInstance().login(
+//                    inputUsername.getText(), inputPassword.getText()
+//                );
+//                
+//                if ( player != null ) {
+//                    labelLoginMessage.setText("");
+//                    
+//                    changeCurrentUI(new MainUI());
+//                } else {
+//                    labelLoginMessage.setText("Invalid username or password!");
+//                    System.out.println("Not Logged");
+//                }
             }
         });
     }

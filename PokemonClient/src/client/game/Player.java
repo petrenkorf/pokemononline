@@ -61,7 +61,6 @@ public class Player extends Character implements Serializable {
     }
     
     public void loadSpritesheet(GLAutoDrawable canvas) throws IOException {
-//        spritesheet = Sprite.loadTexture(filepath, TextureIO.PNG, canvas);
         loadSpriteAnimation("ash.xml", canvas);
     }
     
@@ -91,7 +90,9 @@ public class Player extends Character implements Serializable {
         spritesheet.bind(gl);
         
         double _leftSpace = c.getLocalX();
-        double _upSpace = c.getLocalY() + 4.0;
+        
+        // Subtrai 4 da coordenada y para compensar o espaçamento em branco de 4 pixels do sprite
+        double _upSpace = c.getLocalY() - 4.0;
         
         gl2.glBegin(GL2.GL_QUADS);
             gl2.glTexCoord2d(spriteX, spriteY + spriteHeight);

@@ -10,7 +10,6 @@ import client.game.Player;
 import com.google.gson.Gson;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 
 /**
@@ -98,12 +97,10 @@ public class ClientRequest {
         
         request = makeRequest(Request.LOGIN, username + " " + passwordHash);
         
-        String requestTrimmed = socket.sendMessage(request).trim();
-        
 //        System.out.println("Serialized Object Size: " + q.length());
 //        System.out.println("Deserialize: " + q);
         
-        reply = new String(Base64.decodeBase64(requestTrimmed));
+        reply = socket.sendMessage(request);
         
         if ( reply.equals(Reply.FAIL.toString()) ) {
             return null;
@@ -171,6 +168,7 @@ public class ClientRequest {
     private String makeRequest(Request command, String parameters) {
         String _message = "";
         
+        // Requisição deve sempre ter 4 parâmetros (não vazios) separados por :
         if ( parameters == null || parameters.isEmpty() ) {
             parameters = "0";
         }
@@ -195,15 +193,14 @@ public class ClientRequest {
     public boolean logout() {
         socket = new SocketClient();
         
-        request = makeRequest(Request.LOGOUT);
-        
-        reply = socket.sendMessage(request);
+        reply = socket.sendMessage(makeRequest(Request.LOGOUT));
         
         // Desaloca player caso logout ocorrer com sucesso
-        if ( reply.equals(Reply.OK) ) {
-            player = null;
+        if ( !reply.equals(Reply.OK.toString()) ) {
+            System.out.println("Problem to logout!");
         }
         
+        player = null;
         socket = null;
         
         return true;

@@ -101,7 +101,7 @@ public class Character extends Sprite {
     public int getY(){
         return this.position.y;
     }
-
+    
     public Direction getDirection() {
         return direction;
     }

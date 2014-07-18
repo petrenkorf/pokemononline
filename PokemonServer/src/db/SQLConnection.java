@@ -43,7 +43,7 @@ public class SQLConnection {
     public void connect() throws SQLException {
         String url = "jdbc:" + dbTypeString + "://" + server + ":" + port + "/" + database;
         
-        System.out.println("URL: " + url);
+//        System.out.println("URL: " + url);
         
         con = DriverManager.getConnection(url, user, password);
     }

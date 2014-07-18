@@ -236,6 +236,14 @@ public abstract class Sprite {
 
         return t;
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
     
     public SpriteState getCurrentState() {
         return animation.get(currentState);

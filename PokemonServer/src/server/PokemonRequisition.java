@@ -24,12 +24,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.List;
+import javafx.collections.ObservableList;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 
 /**
- *
+ * Classe responsável por tratar as requisições dos usuários
+ * 
  * @author bruno.weig
  */
 public class PokemonRequisition implements Runnable {
@@ -41,13 +42,17 @@ public class PokemonRequisition implements Runnable {
     
     Socket currentRequisition = null;
     
-    List<PlayerServer> playerOnlineList;
+    ObservableList<PlayerServer> obsPlayerOnline;
+    
+    //
+    final long TIME_FILL_QUADTREE = 50;
+    long fillQuadtreeTimer;
     
     boolean executing = true;
     
-    public PokemonRequisition(BlockingQueue<Socket> requisitions, List<PlayerServer> playerOnlineList) {
+    public PokemonRequisition(BlockingQueue<Socket> requisitions, ObservableList<PlayerServer> obsPlayerOnline) {
         requisitioQueue = requisitions;
-        this.playerOnlineList = playerOnlineList;
+        this.obsPlayerOnline = obsPlayerOnline;
     }
     
     public void stop() {
@@ -83,7 +88,7 @@ public class PokemonRequisition implements Runnable {
                     // Imprime a mensagem com um cabeçalho
                     System.out.println("Received message from user_id=" + id + "(ip=" + 
                             currentRequisition.getInetAddress().toString() + ") with verCode=" + verificationCode);
-                    System.out.println("  message=" + message + " (" + output.getBytes().length + " bytes)");
+                    System.out.println("  message=" + message + " (" + message.getBytes().length + " bytes)");
                     
                     // Verifica qual o comando na requisição
                     if ( command.equals(Request.LOGIN.toString()) ) {
@@ -95,7 +100,8 @@ public class PokemonRequisition implements Runnable {
                     }
                     
                     outputStream = currentRequisition.getOutputStream();
-                    outputStream.write(output.getBytes());
+                    
+                    outputStream.write(Base64.encodeBase64(output.getBytes()));
                 } catch (IOException e) {
                     System.err.println("Socket Error: " + e.getMessage());
                 } catch (InterruptedException e) {
@@ -126,6 +132,7 @@ public class PokemonRequisition implements Runnable {
             
             SQLQuery query = connection.newQuery();
             
+            // Busca um usuário com as devidas credenciais
             query.select("*").
                     from("users").
                     where().equal("username", username)._and()
@@ -159,7 +166,7 @@ public class PokemonRequisition implements Runnable {
                         player = new Player(rs.getInt("id"), validationCode);
                         player.setName(rs.getString("username"));
 
-                        playerOnlineList.add(new PlayerServer(player.getId(), 
+                        obsPlayerOnline.add(new PlayerServer(player.getId(), 
                                 player.getName(), player.getVerificationCode()));
                         
 //                        System.out.println("Player created...");
@@ -173,16 +180,14 @@ public class PokemonRequisition implements Runnable {
 //                        System.out.println("Player serialized...");
                     }
                     
-                    message = Base64.encodeBase64String(message.getBytes());
-                    
 //                    System.out.println("PlayerString Size: " + message.length() + " bytes!");
-                    
-                    System.out.println("Message: " + message);
+//                    System.out.println("Message Encrypted: " + message);
                 } catch (NoSuchAlgorithmException e) {
                     message = Reply.FAIL.toString();
                     System.err.println(this.getClass().getName() + ": " + e.getMessage());
                 } catch ( IOException e ) {
-                    
+                    message = Reply.FAIL.toString();
+                    System.err.println(this.getClass().getName() + ": " + e.getMessage());
                 }
             } else {
                 System.out.println("ResultSet is empty!");
@@ -209,7 +214,7 @@ public class PokemonRequisition implements Runnable {
      * @return 
      */
     private PlayerServer searchPlayer(long id) {
-        Iterator<PlayerServer> it = playerOnlineList.iterator();
+        Iterator<PlayerServer> it = obsPlayerOnline.iterator();
         PlayerServer player;
         
         while ( it.hasNext() ) {
@@ -223,12 +228,24 @@ public class PokemonRequisition implements Runnable {
         return null;
     }
     
+    /**
+     * Usuário tenta realizar logout
+     * 
+     * @param id
+     * @param verificationCode
+     * @return 
+     */
     public String logout(long id, String verificationCode) {
         PlayerServer player = searchPlayer(id);
         
         if ( player != null ) {
+            System.out.println(player.getVerificationCode());
+            System.out.println(verificationCode);
+            
             if ( player.getVerificationCode().equals(verificationCode) ) {
-                playerOnlineList.remove(player);
+                obsPlayerOnline.remove(player);
+                System.out.println("OK");
+                
                 return Reply.OK.toString();
             }
         }

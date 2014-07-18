@@ -29,6 +29,17 @@ public abstract class SQLQuery  {
     public abstract SQLQuery equal(String key, int value);
     public abstract SQLQuery like(String key, String value);
     
+    /**
+     * Realiza filtragem da string
+     * 
+     * @param str
+     * @return 
+     */
+    String filterString(String str) {
+        // TODO Fazer filtragem
+        return str;
+    }
+    
     public String getQuery() {
         return query;
     }

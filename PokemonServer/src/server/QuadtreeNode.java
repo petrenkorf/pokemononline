@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package client.game;
+package server;
 
 import java.util.ArrayList;
 import java.util.List;

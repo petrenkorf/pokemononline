@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -152,7 +153,13 @@ public class ServerUI extends ServerView {
                     @Override
                     protected void updateItem(PlayerServer p, boolean empty) {
                         if (p != null) {
-                            super.updateItem(p, empty);
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // TODO Precisa chamar updateItem da classe super de ListCell
+                                    updateItem(p, empty);
+                                }
+                            });
                             setText(p.getUsername());
                         }
                     }

@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-package client.game;
+package server;
 
+import client.game.Player;
 import java.util.Iterator;
 import java.util.List;
 import javafx.geometry.Point2D;
@@ -52,13 +53,53 @@ public class QuadtreePlayer {
     }
     
     /**
+     * Atualiza Quadtree com os personagens online
+     * 
+     * @param list 
+     */
+    public void update(List<PlayerServer> list) {
+        // Limpa quadtree
+        clear();
+        
+        Iterator<PlayerServer> it = list.iterator();
+        
+        // Insere cada jogador na quadtree
+        while ( it.hasNext() ) {
+            addPlayer(it.next());
+        }
+    }
+    
+    public void clear() {
+        clearQuadTree(root, 0);
+    }
+    
+    /**
+     * Limpa items da Quadtree
+     * 
+     * @param node
+     * @param level 
+     */
+    private void clearQuadTree(QuadtreeNode node, int level) {
+        if ( node != null ) {
+            if ( level < MAX_DEPTH ) {
+                for (int i=0; i < QuadtreeNode.QUADTREE_PARTITIONS; i++) {
+                    clearQuadTree(node.getPartition(i), level+1);
+                }
+            } else {
+                // Limpa items do último nível da árvore
+                node.clearItems();
+            }
+        }
+    }
+    
+    /**
      * Insere um jogador na quadtree
      * 
      * @param player 
      */
-    public void addPlayer(Player player) {
-        int x = player.getX() + player.getWidth()/2;
-        int y = player.getY() + player.getHeight()/2;
+    public void addPlayer(PlayerServer player) {
+        int x = player.getPosX() + player.getWidth()/2;
+        int y = player.getPosY() + player.getHeight()/2;
         
         addPlayerRec(root, player, 0, x, y);
     }
@@ -73,7 +114,7 @@ public class QuadtreePlayer {
      * @param x
      * @param y
      */
-    private void addPlayerRec(QuadtreeNode node, Player player, int depth, int x, int y) {
+    private void addPlayerRec(QuadtreeNode node, PlayerServer player, int depth, int x, int y) {
         if ( depth < MAX_DEPTH ) {
             // Esquerda superior
             if ( insideBound(node.getPartition(0).getBound(), 

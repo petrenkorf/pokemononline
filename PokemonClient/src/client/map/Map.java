@@ -5,15 +5,16 @@ import client.util.Camera;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureCoords;
 import com.jogamp.opengl.util.texture.TextureIO;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import javafx.geometry.Point2D;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import static javax.media.opengl.GL2.*;
 import javax.media.opengl.GLAutoDrawable;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -43,15 +44,20 @@ public class Map {
     int mapWidth;
     int mapHeight;
     
-    public void loadMap(String filename, GLAutoDrawable canvas, boolean loadTileset) {
+    public void loadMap(String filename, GLAutoDrawable canvas) {
         SAXBuilder builder = new SAXBuilder();
         
-        String mapFilename = "src/resource/map/" + filename;
+        String mapFilename = "resource/map/" + filename;
         
-        File mapFile = new File(mapFilename);
+        InputStream in = getClass().getClassLoader().getResourceAsStream(mapFilename);
+//        URL url = getClass().getResource();
+//        System.out.println("Map FileFile: " + url.getFile());
+//        System.out.println("Map FileFile: " + url.getPath());
+        
+//        File mapFile = new File(mapFilename);
         
         try {
-            Document doc = (Document)builder.build(mapFile);
+            Document doc = (Document)builder.build(in);
             Element rootNode = doc.getRootElement();
             
             // Dimensão Mapa
@@ -72,7 +78,8 @@ public class Map {
                                 ", Tile(" + tileWidth + ", " + tileHeight + ")");
             
             // Carrega tileset
-            String filepath = tilesetElement.getChild("image").getAttributeValue("source");
+            Element elemImage = tilesetElement.getChild("image");
+            String filepath = elemImage.getAttributeValue("source");
             
             filepath = filepath.replace("../", "");
             String[] filepathAux = filepath.split("/");
@@ -83,9 +90,10 @@ public class Map {
             System.out.println("Filepath " + filepath + " => " + path);
             
             // Carrega o tileset
-            loadTileset(path, canvas);
+            if ( canvas != null )
+                loadTileset(path, canvas);
             
-            int tilesetWidth = (int)tileset.getWidth() / tileWidth;
+            int tilesetWidth = elemImage.getAttribute("width").getIntValue() / tileWidth;
             
             // Tiles
             String mapString = rootNode.getChild("layer").getChild("data").getText();
@@ -93,11 +101,11 @@ public class Map {
             map = new Point2D[mapHeightTiles][mapWidthTiles];
              
             String[] mapRow = mapString.split("\n");
-            String[] mapCol = null;
+            String[] mapCol;
             int mapValue;
             int row, col;
             
-            int lineTiles = tileset.getWidth() / tileWidth;
+//            int lineTiles = tilesetWidth;
             
             // Lê cada linha do mapa
             for (int i=0; i < mapHeightTiles; i++) {
@@ -107,8 +115,8 @@ public class Map {
                 for (int j=0; j < mapWidthTiles; j++) {
                     mapValue = Integer.parseInt(mapCol[j]) - firstTileID;
                     
-                    row = mapValue / lineTiles;
-                    col = mapValue - (row * lineTiles);
+                    row = mapValue / tilesetWidth;
+                    col = mapValue - (row * tilesetWidth);
                     
                     map[i][j] = new Point2D(col, row);
                 }
@@ -117,6 +125,7 @@ public class Map {
             System.out.println(mapFilename + " loaded successfully!");
         } catch (IOException e) {
             System.err.println("Problema na leitura do arquivo: " + e.getMessage());
+            System.exit(1);
         } catch (JDOMException e) {
             System.err.println("Problema na manipulação do xml: " + e.getMessage());
         }

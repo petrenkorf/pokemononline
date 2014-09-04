@@ -12,12 +12,14 @@ public class Character extends Sprite {
     int runSpeed;
     
     boolean moving;
+    boolean tileMoved;  // Se chegou ao próximo tile
     boolean walking;
     boolean running;
 
     public Character() {
         walkSpeed = 2;
         runSpeed = 4;
+        tileMoved = true;
     }
     
     /**
@@ -76,6 +78,10 @@ public class Character extends Sprite {
         } else {
             currentFrame = 0;
         }
+    }
+
+    public boolean isTileMoved() {
+        return tileMoved;
     }
     
     public void setX(int _x){

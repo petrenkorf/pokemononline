@@ -39,7 +39,6 @@ public class Player extends Character implements Serializable {
     }
     
     public void initPlayer() {
-        spritesheet = null;
         filepath = "gold_ash.png";
 
         // Largura do tile + velocidade
@@ -115,19 +114,19 @@ public class Player extends Character implements Serializable {
         int key = e.getKeyCode();
         
         if(key == KeyEvent.VK_UP){
-        	this.keys[Direction.UP.getValue()] = false;
+            this.keys[Direction.UP.getValue()] = false;
         }
         
         if(key == KeyEvent.VK_DOWN){
-        	this.keys[Direction.DOWN.getValue()] = false;
+            this.keys[Direction.DOWN.getValue()] = false;
         }
         
         if(key == KeyEvent.VK_LEFT){
-        	this.keys[Direction.LEFT.getValue()] = false;
+            this.keys[Direction.LEFT.getValue()] = false;
         }
         
         if(key == KeyEvent.VK_RIGHT){
-        	this.keys[Direction.RIGHT.getValue()] = false;
+            this.keys[Direction.RIGHT.getValue()] = false;
         }
         
       /*  if(this.keys[Direction.RIGHT.getValue()] == false &&
@@ -156,36 +155,41 @@ public class Player extends Character implements Serializable {
     public void keyPressed(KeyEvent e) {
         switch ( e.getKeyCode() ) {
             case KeyEvent.VK_RIGHT:
-            	this.keys[Direction.RIGHT.getValue()] = true;
-            	if ( !walking ) {
+                keys[Direction.RIGHT.getValue()] = true;
+
+                if ( tileMoved ) {
                     walking = true;
-                    
+                    tileMoved = false;
+
                     if ( direction != Direction.RIGHT ) {
                         setDirection(Direction.RIGHT);
                         currentTime = 0;
                         currentFrame = 0;
                     }
                 }
-                
+
                 break;
             case KeyEvent.VK_LEFT:
-            	this.keys[Direction.LEFT.getValue()] = true;
-            	if ( !walking ) {
+                keys[Direction.LEFT.getValue()] = true;
+
+                if ( tileMoved ) {
                     walking = true;
-                    this.keys[Direction.LEFT.getValue()] = true;
+                    tileMoved = false;
+
                     if ( direction != Direction.LEFT ) {
                         setDirection(Direction.LEFT);
                         currentTime = 0;
                         currentFrame = 0;
                     }
                 }
-                
+
                 break;
             case KeyEvent.VK_UP:
-            	this.keys[Direction.UP.getValue()] = true;
-            	if ( !walking ) {
-                	this.keys[Direction.UP.getValue()] = true;
-                	walking = true;
+                keys[Direction.UP.getValue()] = true;
+
+                if ( tileMoved ) {
+                    walking = true;
+                    tileMoved = false;
 
                     if ( direction != Direction.UP ) {
                         setDirection(Direction.UP);
@@ -193,68 +197,89 @@ public class Player extends Character implements Serializable {
                         currentFrame = 0;
                     }
                 }
-                
+
                 break;
             case KeyEvent.VK_DOWN:
-            	this.keys[Direction.DOWN.getValue()] = true;
-            	if ( !walking ) {
+                keys[Direction.DOWN.getValue()] = true;
+
+                if ( tileMoved ) {
                     walking = true;
-                    this.keys[Direction.DOWN.getValue()] = true;
+                    tileMoved = false;
+
                     if ( direction != Direction.DOWN ) {
                         setDirection(Direction.DOWN);
                         currentTime = 0;
                         currentFrame = 0;
                     }
                 }
-                
+
                 break;
             default:
                 break;
         }
     }
-    
-//    @Override
+
+    /**
+     * Atualiza os sprites e posicionamento do personagem
+     * 
+     * @param map 
+     */
     public void update(Map map) {
+//        if ( tileMoved ) {
+//            // Se algum dos direcionais está pressionado
+//            if( keys[Direction.RIGHT.getValue()] == false &&
+//                keys[Direction.LEFT.getValue()] == false &&
+//                keys[Direction.UP.getValue()] == false &&
+//                keys[Direction.DOWN.getValue()] == false ){
+//                walking = false;
+//            }
+//        }
+        
         if ( walking ) {
-            walkPosition -= walkSpeed;
-            
-            if ( walkPosition <= 0 ) {
-                walkPosition = map.getTileWidth();
-                
-                if(this.keys[Direction.RIGHT.getValue()] == false &&
-                		this.keys[Direction.LEFT.getValue()] == false &&
-                		this.keys[Direction.UP.getValue()] == false &&
-                		this.keys[Direction.DOWN.getValue()] == false ){
-                    	
-                    	walking = false;
-                    }
-            }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+            // Incrementa/Decrementa posição de acordo com a direção
             switch ( direction ) {
                 case DOWN:
                     if ( getY() + position.height + walkSpeed <= map.getMapHeight() )
                         setY(getY() + walkSpeed);
-                    
+
                     break;
                 case LEFT:
                     if ( getX() >= walkSpeed )
                         setX(getX() - walkSpeed);
-                    
+
                     break;
                 case UP:
                     if ( getY() >= walkSpeed )
                         setY(getY() - walkSpeed);
-                    
+
                     break;
                 case RIGHT:
                     if ( getX() + position.width + walkSpeed <= map.getMapWidth() )
                         setX(getX() + walkSpeed);
-                     
+
                     break;
             }
-            
-            super.update();
+                
+            // Distância para próximo tile
+            walkPosition -= walkSpeed;
+
+            // Se chegou ao próximo tile
+            if ( walkPosition <= 0 ) {
+                tileMoved = true;
+                walkPosition = map.getTileWidth();
+                
+                // Se algum dos direcionais está pressionado
+                if( keys[Direction.RIGHT.getValue()] == false &&
+                    keys[Direction.LEFT.getValue()] == false &&
+                    keys[Direction.UP.getValue()] == false &&
+                    keys[Direction.DOWN.getValue()] == false ){
+                    walking = false;
+                }
+            }
         }
+        
+        // Atualiza sprite corrente
+        super.update();
     }
 
     public long getId() {

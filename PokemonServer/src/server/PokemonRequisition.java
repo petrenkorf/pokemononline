@@ -9,6 +9,7 @@ package server;
 import client.communication.ClientRequest.Request;
 import client.communication.ClientRequest.Reply;
 import client.game.Player;
+import client.map.Map;
 import com.google.gson.Gson;
 import db.SQLConnection;
 import db.SQLQuery;
@@ -24,7 +25,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Iterator;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
+import javafx.scene.shape.Rectangle;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 
@@ -44,15 +48,27 @@ public class PokemonRequisition implements Runnable {
     
     ObservableList<PlayerServer> obsPlayerOnline;
     
-    //
-    final long TIME_FILL_QUADTREE = 50;
+    QuadtreePlayer quadtree = new QuadtreePlayer();
+    
+    Map map = new Map();
+    
+    final long TIME_FILL_QUADTREE = 20;
     long fillQuadtreeTimer;
+    long lastTimer;
     
     boolean executing = true;
     
     public PokemonRequisition(BlockingQueue<Socket> requisitions, ObservableList<PlayerServer> obsPlayerOnline) {
         requisitioQueue = requisitions;
         this.obsPlayerOnline = obsPlayerOnline;
+        fillQuadtreeTimer = Calendar.getInstance().getTimeInMillis();
+        
+        // Carrega mapa
+        map.loadMap("main_2.tmx", null);
+        
+        quadtree.createTree(new Rectangle(map.getMapWidth(), map.getMapHeight()), Point2D.ZERO);
+        
+        map = new Map();
     }
     
     public void stop() {
@@ -68,6 +84,17 @@ public class PokemonRequisition implements Runnable {
                 String output = "";
                 String command = "";
 
+                lastTimer = Calendar.getInstance().getTimeInMillis();
+                
+                // Atualiza a quadtree a cada TIME_FILL_QUADTREE milisegundos
+                if ( lastTimer - fillQuadtreeTimer == TIME_FILL_QUADTREE ) {
+                    fillQuadtreeTimer = Calendar.getInstance().getTimeInMillis();
+                    
+                    // Atualiza referência dos jogadores na Quadtree
+                    quadtree.update(obsPlayerOnline);
+                    
+                }
+                
                 try {
                     currentRequisition = requisitioQueue.take();
 
@@ -166,8 +193,14 @@ public class PokemonRequisition implements Runnable {
                         player = new Player(rs.getInt("id"), validationCode);
                         player.setName(rs.getString("username"));
 
-                        obsPlayerOnline.add(new PlayerServer(player.getId(), 
-                                player.getName(), player.getVerificationCode()));
+                        PlayerServer p = new PlayerServer(player.getId(), 
+                                player.getName(), player.getVerificationCode());
+                        
+                        // TODO Não utilizar diretamente os valores
+                        p.setWidth(16);
+                        p.setHeight(24);
+                        
+                        obsPlayerOnline.add(p);
                         
 //                        System.out.println("Player created...");
 
@@ -243,8 +276,15 @@ public class PokemonRequisition implements Runnable {
             System.out.println(verificationCode);
             
             if ( player.getVerificationCode().equals(verificationCode) ) {
-                obsPlayerOnline.remove(player);
-                System.out.println("OK");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        String name = player.getUsername();
+                        
+                        obsPlayerOnline.remove(player);
+//                        System.out.println(name + " removed!");
+                    }
+                });
                 
                 return Reply.OK.toString();
             }

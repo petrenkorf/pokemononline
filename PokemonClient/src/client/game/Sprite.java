@@ -70,7 +70,7 @@ public abstract class Sprite {
     protected Calendar timer = null;
 
     protected String filepath;
-    protected transient Texture spritesheet;
+    protected transient Texture spritesheet = null;
 
     public static final String resourcePath = "/resource/image/sprite/";
 

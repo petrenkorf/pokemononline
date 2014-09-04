@@ -3,6 +3,7 @@ package client;
 import client.ui.AbstractUI;
 import client.util.Display;
 import client.communication.SocketClient;
+import client.ui.LoginUI;
 import client.ui.GameUI;
 import java.awt.DisplayMode;
 import java.util.List;

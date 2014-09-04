@@ -18,6 +18,8 @@ public class PlayerServer {
     
     int posX;
     int posY;
+    int width;
+    int height;
 
     public PlayerServer(long id, String username, String verificationCode) {
         this.id = id;
@@ -63,5 +65,21 @@ public class PlayerServer {
 
     public void setPosY(int posY) {
         this.posY = posY;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 }

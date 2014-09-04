@@ -134,7 +134,7 @@ public class Game implements GLEventListener, KeyListener {
         
         // Carrega mapa
         map = new Map();
-        map.loadMap("main_2.tmx", canvas, true);
+        map.loadMap("main_2.tmx", canvas);
         
         // Objeto para renderizar strings
         textRenderer = new TextRenderer(new Font("Monospaced", Font.BOLD, 18));
@@ -213,11 +213,12 @@ public class Game implements GLEventListener, KeyListener {
 //        String pos = "FrameTime: " + lastFrameTime + " | Position: " + hero.getX() + "x" + hero.getY();
         
         textRenderer.beginRendering(canvas.getWidth(), canvas.getHeight());
-        textRenderer.setColor(Color.gray);
+        textRenderer.setColor(Color.orange);
         
         String pos = "> FPS(" + frames.getFpsActual() + ") / Frames(" + 
                 frames.getFramesTimeMean() + "/" + frames.getTimePerFrameExpected() + 
-                ") Position: " + player.getX() + "x" + player.getY() + " / Walking: " + player.isWalking();
+                ") Position: " + player.getX() + "x" + player.getY() + " / Walking: " + player.isWalking() +
+                " / Moved: " + player.isTileMoved();
         
         textRenderer.draw(pos, 20, canvas.getHeight() - 20);
         
